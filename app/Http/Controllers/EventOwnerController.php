@@ -9,10 +9,6 @@ use Inertia\Inertia;
 
 class EventOwnerController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
 
     public function registrations(Event $event)
     {

@@ -124,8 +124,8 @@ class EventsController extends Controller
                         $event->agendas()->create([
                             'title' => $agenda['title'],
                             'description' => $agenda['description'] ?? null,
-                            'start_time' => $data['start_time'] . ' ' . $agenda['start_time'],
-                            'end_time' => $data['start_time'] . ' ' . $agenda['end_time'],
+                            'start_time' => $data['date'] . ' ' . $agenda['start_time'],
+                            'end_time' => $data['date'] . ' ' . $agenda['end_time'],
                         ]);
                     }
                 }

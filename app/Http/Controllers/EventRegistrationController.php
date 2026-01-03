@@ -11,11 +11,6 @@ use Inertia\Inertia;
 
 class EventRegistrationController extends Controller
 {
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
     public function index()
     {
         $user = Auth::user();

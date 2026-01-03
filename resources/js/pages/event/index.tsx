@@ -82,7 +82,7 @@ const Index = ({ events }: Props) => {
         <>
             <Head title="My Events" />
             <AppLayout breadcrumbs={breadcrumbs}>
-                <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+                <div className="p-4">
                     {/* Header */}
                     <div className="mb-8 flex items-center justify-between">
                         <div>
