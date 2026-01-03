@@ -241,9 +241,91 @@ const CreateEvent = ({ categories }: { categories: Category[] }) => {
         );
     };
 
+    const getStepErrors = (stepIndex: number): boolean => {
+        const stepFields: Record<number, string[]> = {
+            0: [
+                'title',
+                'description',
+                'category',
+                'date',
+                'start_time',
+                'end_time',
+                'tags',
+                'images',
+            ],
+            1: [
+                'is_online',
+                'online_link',
+                'location_name',
+                'location_address',
+                'city',
+                'state',
+                'location_lat',
+                'location_lng',
+            ],
+            2: ['is_free', 'capacity', 'ticket_types'],
+            3: ['speakers', 'agenda', 'faqs'],
+        };
+
+        const fields = stepFields[stepIndex] || [];
+        return Object.keys(errors).some((key) =>
+            fields.some((field) => key.startsWith(field)),
+        );
+    };
+
     const saveEvent = async (status: string) => {
         setData('status', status);
-        post(events.store().url);
+        post(events.store().url, {
+            onError: (errors) => {
+                // Show error toast with first error message
+                const firstError = Object.values(errors)[0];
+                console.error('Event creation failed:', errors);
+
+                // Find which step has errors and navigate to it
+                const errorFields = Object.keys(errors);
+                if (
+                    errorFields.some((f) =>
+                        [
+                            'title',
+                            'description',
+                            'category',
+                            'date',
+                            'start_time',
+                            'end_time',
+                            'tags',
+                            'images',
+                        ].includes(f),
+                    )
+                ) {
+                    setActiveStep(0);
+                } else if (
+                    errorFields.some((f) =>
+                        [
+                            'is_online',
+                            'online_link',
+                            'location_name',
+                            'location_address',
+                            'city',
+                            'state',
+                        ].includes(f),
+                    )
+                ) {
+                    setActiveStep(1);
+                } else if (
+                    errorFields.some((f) =>
+                        ['is_free', 'capacity', 'ticket_types'].includes(f),
+                    )
+                ) {
+                    setActiveStep(2);
+                } else if (
+                    errorFields.some((f) =>
+                        ['speakers', 'agenda', 'faqs'].includes(f),
+                    )
+                ) {
+                    setActiveStep(3);
+                }
+            },
+        });
     };
 
     return (
@@ -262,25 +344,76 @@ const CreateEvent = ({ categories }: { categories: Category[] }) => {
                         </p>
                     </div>
 
+                    {/* Error Summary */}
+                    {Object.keys(errors).length > 0 && (
+                        <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-4">
+                            <div className="flex items-start">
+                                <div className="flex-shrink-0">
+                                    <svg
+                                        className="h-5 w-5 text-red-400"
+                                        viewBox="0 0 20 20"
+                                        fill="currentColor"
+                                    >
+                                        <path
+                                            fillRule="evenodd"
+                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                            clipRule="evenodd"
+                                        />
+                                    </svg>
+                                </div>
+                                <div className="ml-3">
+                                    <h3 className="text-sm font-medium text-red-800">
+                                        There{' '}
+                                        {Object.keys(errors).length === 1
+                                            ? 'is'
+                                            : 'are'}{' '}
+                                        {Object.keys(errors).length} error
+                                        {Object.keys(errors).length === 1
+                                            ? ''
+                                            : 's'}{' '}
+                                        with your submission
+                                    </h3>
+                                    <div className="mt-2 text-sm text-red-700">
+                                        <p>
+                                            Please review the form and correct
+                                            the highlighted fields.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Steps */}
                     <div className="mb-8 overflow-x-auto">
                         <div className="flex min-w-max gap-2">
-                            {Eventsteps.map((step, i) => (
-                                <button
-                                    key={i}
-                                    onClick={() => setActiveStep(i)}
-                                    className={`flex items-center gap-2 rounded-full px-4 py-2 transition-all ${
-                                        activeStep === i
-                                            ? 'bg-[#14B8A6] text-white'
-                                            : 'bg-white text-gray-600 hover:bg-gray-100'
-                                    }`}
-                                >
-                                    <step.icon className="h-4 w-4" />
-                                    <span className="font-medium">
-                                        {step.title}
-                                    </span>
-                                </button>
-                            ))}
+                            {Eventsteps.map((step, i) => {
+                                const hasErrors = getStepErrors(i);
+                                return (
+                                    <button
+                                        key={i}
+                                        onClick={() => setActiveStep(i)}
+                                        className={`relative flex items-center gap-2 rounded-full px-4 py-2 transition-all ${
+                                            activeStep === i
+                                                ? 'bg-[#14B8A6] text-white'
+                                                : hasErrors
+                                                  ? 'border border-red-200 bg-red-50 text-red-600 hover:bg-red-100'
+                                                  : 'bg-white text-gray-600 hover:bg-gray-100'
+                                        }`}
+                                    >
+                                        <step.icon className="h-4 w-4" />
+                                        <span className="font-medium">
+                                            {step.title}
+                                        </span>
+                                        {hasErrors && (
+                                            <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                                                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
+                                                <span className="relative inline-flex h-3 w-3 rounded-full bg-red-500"></span>
+                                            </span>
+                                        )}
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
 
@@ -301,6 +434,7 @@ const CreateEvent = ({ categories }: { categories: Category[] }) => {
                                 handleImageUpload={handleImageUpload}
                                 tagInput={tagInput}
                                 setTagInput={setTagInput}
+                                errors={errors}
                             />
                         )}
 

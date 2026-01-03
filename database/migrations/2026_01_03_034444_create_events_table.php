@@ -27,7 +27,7 @@ return new class extends Migration
             $table->boolean('is_online')->default(false);
             $table->string('online_url')->nullable();
             $table->boolean('is_free')->default(false);
-            $table->unsignedBigInteger('capacity')->default(false);
+            $table->unsignedBigInteger('capacity')->nullable();
             $table->string('tags')->nullable();
             $table->date('date');
             $table->foreignUlid('user_id')->constrained('users')->cascadeOnDelete();

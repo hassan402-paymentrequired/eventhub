@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Button } from '@/components/ui/button';
 import {
     Card,
     CardContent,
@@ -6,22 +7,27 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { DollarSign, Plus, Trash2 } from 'lucide-react';
 import { EventFormData } from '../types';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 
 interface Props {
     eventData: EventFormData;
     handleInputChange: (field: keyof EventFormData, value: any) => void;
-    addTicketType: () => void,
-    removeTicketType: (index: number) => void,
-    updateTicketType: (index: number, field: string, value: string) => void,
+    addTicketType: () => void;
+    removeTicketType: (index: number) => void;
+    updateTicketType: (index: number, field: string, value: string) => void;
 }
 
-const TicketInfo = ({handleInputChange,eventData, removeTicketType, addTicketType, updateTicketType }: Props) => {
+const TicketInfo = ({
+    handleInputChange,
+    eventData,
+    removeTicketType,
+    addTicketType,
+    updateTicketType,
+}: Props) => {
     return (
         <Card>
             <CardHeader>
@@ -59,6 +65,11 @@ const TicketInfo = ({handleInputChange,eventData, removeTicketType, addTicketTyp
                         }
                         className="mt-1"
                     />
+                    {errors.capacity && (
+                        <p className="mt-1 text-sm text-red-500">
+                            {errors.capacity}
+                        </p>
+                    )}
                 </div>
 
                 {!eventData.is_free && (
@@ -112,7 +123,11 @@ const TicketInfo = ({handleInputChange,eventData, removeTicketType, addTicketTyp
                                             updateTicketType(
                                                 i,
                                                 'price',
-                                                (parseFloat(e.target.value) || 0).toString(),
+                                                (
+                                                    parseFloat(
+                                                        e.target.value,
+                                                    ) || 0
+                                                ).toString(),
                                             )
                                         }
                                     />

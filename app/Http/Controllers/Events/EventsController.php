@@ -8,6 +8,7 @@ use App\Http\Requests\EventStoreRequest;
 use  App\Models\Event;
 use Exception;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class EventsController extends Controller
 {
@@ -68,6 +69,8 @@ class EventsController extends Controller
         $ticketTypes = $data['ticket_types'] ?? [];
 
         try {
+            DB::beginTransaction();
+
             $event = Event::create([
                 'user_id' => $data['user_id'],
                 'name' => $data['title'],
@@ -83,44 +86,63 @@ class EventsController extends Controller
                 'online_url' => $data['online_link'] ?? null,
                 'is_free' => $data['is_free'],
                 'capacity' => $data['capacity'] ?? null,
-                'state' => $data['state'],
-                'city' => $data['city'],
-                'tags' => json_encode($data['tags']),
-                'date' => $data['date'] ?? now()->format('Y-m-d'),
+                'state' => $data['state'] ?? null,
+                'city' => $data['city'] ?? null,
+                'tags' => !empty($data['tags']) ? json_encode($data['tags']) : null,
+                'date' => $data['date'],
                 'status' => $data['status']
             ]);
 
             // Create speakers
-            foreach ($speakers as $speaker) {
-                $event->speakers()->create([
-                    'name' => $speaker['name'],
-                    'title' => $speaker['title'],
-                    'bio' => $speaker['bio'] ?? null,
-                    'photo_url' => $speaker['image_url'] ?? null,
-                ]);
+            if (!empty($speakers)) {
+                foreach ($speakers as $speaker) {
+                    if (!empty($speaker['name']) && !empty($speaker['title'])) {
+                        $event->speakers()->create([
+                            'name' => $speaker['name'],
+                            'title' => $speaker['title'],
+                            'bio' => $speaker['bio'] ?? null,
+                            'photo_url' => $speaker['image_url'] ?? null,
+                        ]);
+                    }
+                }
             }
 
             // Create FAQs
-            $event->faqs()->createMany($faqs);
+            if (!empty($faqs)) {
+                $validFaqs = array_filter($faqs, function ($faq) {
+                    return !empty($faq['question']) && !empty($faq['answer']);
+                });
+                if (!empty($validFaqs)) {
+                    $event->faqs()->createMany($validFaqs);
+                }
+            }
 
             // Create agenda items with proper datetime formatting
-            foreach ($agendas as $agenda) {
-                $event->agendas()->create([
-                    'title' => $agenda['title'],
-                    'description' => $agenda['description'] ?? null,
-                    'start_time' => $data['start_date'] . ' ' . $agenda['start_time'],
-                    'end_time' => $data['start_date'] . ' ' . $agenda['end_time'],
-                ]);
+            if (!empty($agendas)) {
+                foreach ($agendas as $agenda) {
+                    if (!empty($agenda['title']) && !empty($agenda['start_time']) && !empty($agenda['end_time'])) {
+                        $event->agendas()->create([
+                            'title' => $agenda['title'],
+                            'description' => $agenda['description'] ?? null,
+                            'start_time' => $data['start_date'] . ' ' . $agenda['start_time'],
+                            'end_time' => $data['start_date'] . ' ' . $agenda['end_time'],
+                        ]);
+                    }
+                }
             }
 
             // Create tickets
-            foreach ($ticketTypes as $ticket) {
-                $event->tickets()->create([
-                    'name' => $ticket['name'],
-                    'price' => $ticket['price'],
-                    'quantity_available' => $ticket['capacity'] ?? null,
-                    'description' => $ticket['description'] ?? null,
-                ]);
+            if (!empty($ticketTypes)) {
+                foreach ($ticketTypes as $ticket) {
+                    if (!empty($ticket['name'])) {
+                        $event->tickets()->create([
+                            'name' => $ticket['name'],
+                            'price' => $ticket['price'] ?? 0,
+                            'quantity_available' => $ticket['capacity'] ?? null,
+                            'description' => $ticket['description'] ?? null,
+                        ]);
+                    }
+                }
             }
 
             // Handle image uploads
@@ -133,10 +155,16 @@ class EventsController extends Controller
                 }
             }
 
-            return redirect()->route('events.index')->with('success-toast', 'Event created successfully.');
+            DB::commit();
+
+            return redirect()->route('events.index')->with('success-toast', 'Event created successfully!');
         } catch (Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Event creation failed: ' . $e->getMessage());
-            return back()->with('error-toast', 'An error occurred while creating the event.');
+            DB::rollBack();
+            \Illuminate\Support\Facades\Log::error('Event creation failed: ' . $e->getMessage(), [
+                'exception' => $e,
+                'user_id' => Auth::id(),
+            ]);
+            return back()->withInput()->with('error-toast', 'An error occurred while creating the event. Please try again.');
         }
     }
 }

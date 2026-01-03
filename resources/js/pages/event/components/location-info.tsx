@@ -9,22 +9,28 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { Autocomplete, LoadScript } from '@react-google-maps/api';
 import { Globe } from 'lucide-react';
 import { EventFormData } from '../types';
-import { LoadScript, Autocomplete } from '@react-google-maps/api';
 
 interface Props {
     eventData: EventFormData;
     handleInputChange: (field: keyof EventFormData, value: any) => void;
-    onPlaceChanged: () => void,
-    onLoad: (autocompleteInstance: google.maps.places.Autocomplete) => void,
-    errors: any
+    onPlaceChanged: () => void;
+    onLoad: (autocompleteInstance: google.maps.places.Autocomplete) => void;
+    errors: any;
 }
 
 const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
-const libraries: ("places")[] = ["places"];
+const libraries: 'places'[] = ['places'];
 
-const LocationInfo = ({ eventData, handleInputChange, onPlaceChanged, onLoad, errors }: Props) => {
+const LocationInfo = ({
+    eventData,
+    handleInputChange,
+    onPlaceChanged,
+    onLoad,
+    errors,
+}: Props) => {
     return (
         <Card>
             <CardHeader>
@@ -54,7 +60,7 @@ const LocationInfo = ({ eventData, handleInputChange, onPlaceChanged, onLoad, er
 
                 {eventData.is_online ? (
                     <div>
-                        <Label htmlFor="online_link">Meeting Link</Label>
+                        <Label htmlFor="online_link">Meeting Link *</Label>
                         <Input
                             id="online_link"
                             placeholder="https://zoom.us/j/..."
@@ -64,6 +70,11 @@ const LocationInfo = ({ eventData, handleInputChange, onPlaceChanged, onLoad, er
                             }
                             className="mt-1"
                         />
+                        {errors.online_link && (
+                            <p className="mt-1 text-sm text-red-500">
+                                {errors.online_link}
+                            </p>
+                        )}
                     </div>
                 ) : (
                     <>
@@ -81,6 +92,11 @@ const LocationInfo = ({ eventData, handleInputChange, onPlaceChanged, onLoad, er
                                 }
                                 className="mt-1"
                             />
+                            {errors.location_name && (
+                                <p className="mt-1 text-sm text-red-500">
+                                    {errors.location_name}
+                                </p>
+                            )}
                         </div>
 
                         <LoadScript
@@ -88,7 +104,7 @@ const LocationInfo = ({ eventData, handleInputChange, onPlaceChanged, onLoad, er
                             libraries={libraries}
                         >
                             <div>
-                                <Label>Business Address</Label>
+                                <Label>Address *</Label>
                                 <Autocomplete
                                     onLoad={onLoad}
                                     onPlaceChanged={onPlaceChanged}
@@ -106,15 +122,56 @@ const LocationInfo = ({ eventData, handleInputChange, onPlaceChanged, onLoad, er
                                         className="mt-1"
                                     />
                                 </Autocomplete>
-                                {errors.address && (
-                                    <p className="mt-1 text-sm text-destructive">
-                                        {errors.address}
+                                {errors.location_address && (
+                                    <p className="mt-1 text-sm text-red-500">
+                                        {errors.location_address}
                                     </p>
                                 )}
                             </div>
                         </LoadScript>
 
-                
+                        <div className="grid gap-4 md:grid-cols-2">
+                            <div>
+                                <Label htmlFor="city">City *</Label>
+                                <Input
+                                    id="city"
+                                    placeholder="City"
+                                    value={eventData.city}
+                                    onChange={(e) =>
+                                        handleInputChange(
+                                            'city',
+                                            e.target.value,
+                                        )
+                                    }
+                                    className="mt-1"
+                                />
+                                {errors.city && (
+                                    <p className="mt-1 text-sm text-red-500">
+                                        {errors.city}
+                                    </p>
+                                )}
+                            </div>
+                            <div>
+                                <Label htmlFor="state">State *</Label>
+                                <Input
+                                    id="state"
+                                    placeholder="State"
+                                    value={eventData.state}
+                                    onChange={(e) =>
+                                        handleInputChange(
+                                            'state',
+                                            e.target.value,
+                                        )
+                                    }
+                                    className="mt-1"
+                                />
+                                {errors.state && (
+                                    <p className="mt-1 text-sm text-red-500">
+                                        {errors.state}
+                                    </p>
+                                )}
+                            </div>
+                        </div>
                     </>
                 )}
             </CardContent>

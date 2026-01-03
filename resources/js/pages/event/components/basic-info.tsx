@@ -27,9 +27,10 @@ interface Props {
     eventData: EventFormData;
     handleImageUpload: (e: ChangeEvent<HTMLInputElement>) => void;
     addTag: () => void;
-    setTagInput: () => void;
+    setTagInput: (value: string) => void;
     removeTag: (index: string) => void;
-    tagInput: string
+    tagInput: string;
+    errors: any;
 }
 
 const BasicInfo = ({
@@ -40,7 +41,8 @@ const BasicInfo = ({
     addTag,
     removeTag,
     tagInput,
-    setTagInput
+    setTagInput,
+    errors,
 }: Props) => {
     return (
         <Card>
@@ -62,10 +64,15 @@ const BasicInfo = ({
                         }
                         className="mt-1"
                     />
+                    {errors.title && (
+                        <p className="mt-1 text-sm text-red-500">
+                            {errors.title}
+                        </p>
+                    )}
                 </div>
 
                 <div>
-                    <Label htmlFor="description">Full Description</Label>
+                    <Label htmlFor="description">Full Description *</Label>
                     <Textarea
                         id="description"
                         placeholder="Describe your event in detail..."
@@ -75,6 +82,11 @@ const BasicInfo = ({
                         }
                         className="mt-1 min-h-[150px]"
                     />
+                    {errors.description && (
+                        <p className="mt-1 text-sm text-red-500">
+                            {errors.description}
+                        </p>
+                    )}
                 </div>
 
                 <div>
@@ -94,6 +106,11 @@ const BasicInfo = ({
                             ))}
                         </SelectContent>
                     </Select>
+                    {errors.category && (
+                        <p className="mt-1 text-sm text-red-500">
+                            {errors.category}
+                        </p>
+                    )}
                 </div>
 
                 <div>
@@ -114,7 +131,12 @@ const BasicInfo = ({
                                             size="icon"
                                             className="absolute top-2 right-2"
                                             onClick={() =>
-                                                handleInputChange('images', '')
+                                                handleInputChange(
+                                                    'images',
+                                                    eventData.images.filter(
+                                                        (_, i) => i !== index,
+                                                    ),
+                                                )
                                             }
                                         >
                                             <Trash2 className="h-4 w-4" />
@@ -137,6 +159,11 @@ const BasicInfo = ({
                             </label>
                         )}
                     </div>
+                    {errors.images && (
+                        <p className="mt-1 text-sm text-red-500">
+                            {errors.images}
+                        </p>
+                    )}
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-3">
@@ -151,9 +178,14 @@ const BasicInfo = ({
                             }
                             className="mt-1"
                         />
+                        {errors.date && (
+                            <p className="mt-1 text-sm text-red-500">
+                                {errors.date}
+                            </p>
+                        )}
                     </div>
                     <div>
-                        <Label htmlFor="start_time">Start Time</Label>
+                        <Label htmlFor="start_time">Start Time *</Label>
                         <Input
                             id="start_time"
                             type="time"
@@ -163,9 +195,14 @@ const BasicInfo = ({
                             }
                             className="mt-1"
                         />
+                        {errors.start_time && (
+                            <p className="mt-1 text-sm text-red-500">
+                                {errors.start_time}
+                            </p>
+                        )}
                     </div>
                     <div>
-                        <Label htmlFor="end_time">End Time</Label>
+                        <Label htmlFor="end_time">End Time *</Label>
                         <Input
                             id="end_time"
                             type="time"
@@ -175,6 +212,11 @@ const BasicInfo = ({
                             }
                             className="mt-1"
                         />
+                        {errors.end_time && (
+                            <p className="mt-1 text-sm text-red-500">
+                                {errors.end_time}
+                            </p>
+                        )}
                     </div>
                 </div>
 
@@ -184,9 +226,7 @@ const BasicInfo = ({
                         <Input
                             placeholder="Add tags for better discovery"
                             value={tagInput}
-                            onChange={(e) =>
-                                setTagInput(e.target.value)
-                            }
+                            onChange={(e) => setTagInput(e.target.value)}
                             onKeyPress={(e) =>
                                 e.key === 'Enter' &&
                                 (e.preventDefault(), addTag())
