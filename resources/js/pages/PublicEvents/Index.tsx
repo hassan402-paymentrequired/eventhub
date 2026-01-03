@@ -1,14 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from '@/components/button';
 import { Head, Link, router } from '@inertiajs/react';
-import { Calendar, ChevronRightIcon, Clock, Filter, MapPin, Search, Users } from 'lucide-react';
+import { Calendar, ChevronRightIcon, MapPin, Search } from 'lucide-react';
 import { FormEvent, useState } from 'react';
 import { Category } from '../event/types';
 import { Gradient } from '@/components/gradient';
 import { Container } from '@/components/container';
 import { Navbar } from '@/components/navbar';
+import EventCard from '../event/components/event-card';
+import { Event as CardEvent } from '../event/types';
 
-interface Event {
+interface DatabaseEvent {
     id: string;
     name: string;
     description: string;
@@ -40,9 +42,9 @@ interface Event {
 
 interface Props {
     events: {
-        data: Event[];
+        data: DatabaseEvent[];
         links: any[];
-        meta: any;
+        total: number
     };
     categories: Category[];
     filters: {
@@ -57,6 +59,7 @@ interface Props {
 }
 
 const PublicEventsIndex = ({ events, categories, filters }: Props) => {
+    console.log(events, categories, filters)
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
     const [selectedCategory, setSelectedCategory] = useState(
         filters.category || '',
@@ -84,21 +87,34 @@ const PublicEventsIndex = ({ events, categories, filters }: Props) => {
         }
     };
 
+    const transformEvent = (dbEvent: DatabaseEvent): CardEvent => {
+        const startDate = new Date(dbEvent.start_time);
 
-    const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString('en-US', {
-            weekday: 'short',
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-        });
-    };
-
-    const formatTime = (dateString: string) => {
-        return new Date(dateString).toLocaleTimeString('en-US', {
-            hour: '2-digit',
-            minute: '2-digit',
-        });
+        return {
+            id: dbEvent.id,
+            title: dbEvent.name,
+            description: dbEvent.description,
+            date: startDate.toLocaleDateString(),
+            time: startDate.toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
+            }),
+            location: dbEvent.is_online
+                ? 'Online Event'
+                : `${dbEvent.venue_name || ''}, ${dbEvent.city}, ${dbEvent.state}`.trim(),
+            category: dbEvent.category?.name || 'General',
+            image: dbEvent.images?.[0]?.url
+                ? `/storage/${dbEvent.images[0].url}`
+                : '/logo.svg',
+            price: dbEvent.is_free ? 'Free' : 'Paid',
+            attendees: dbEvent.registration_count || 0,
+            featured: false,
+            speakers: [],
+            tickets: [],
+            agendas: [],
+            faqs: [],
+            images: dbEvent.images || [],
+        };
     };
 
 
@@ -115,7 +131,7 @@ const PublicEventsIndex = ({ events, categories, filters }: Props) => {
                             href="/blog/radiant-raises-100m-series-a-from-tailwind-ventures"
                             className="flex items-center gap-1 rounded-full bg-fuchsia-950/35 px-3 py-0.5 text-sm/6 font-medium text-white data-hover:bg-fuchsia-950/30"
                         >
-                            Browse your favorite events and conference
+                            Browse your favorite events and conferences
                             <ChevronRightIcon className="size-4" />
                         </Link>
                     }
@@ -192,60 +208,15 @@ const PublicEventsIndex = ({ events, categories, filters }: Props) => {
         </div>
 
                <Container>
-                <div className="mx-auto max-w-7xl x-4 py-8 sm:px-6 lg:px-8">
+                <div className="mx-auto max-w-7xl py-8 ">
                     <div className="mb-8">
                         <div className="mb-4 flex items-center justify-between">
                             <h2 className="text-2xl font-bold text-gray-900">
-                                Upcoming Events ({events?.meta?.total})
+                                Upcoming Events ({events?.total})
                             </h2>
-                            <Button
-                                variant="outline"
-                                onClick={() => setShowFilters(!showFilters)}
-                                className="flex items-center gap-2"
-                            >
-                                <Filter className="h-4 w-4" />
-                                Filters
-                            </Button>
                         </div>
 
-                        {showFilters && (
-                            <div className="mb-6 rounded-lg border bg-white p-6 shadow-sm">
-                                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                    <div>
-                                        <label className="mb-2 block text-sm font-medium text-gray-700">
-                                            Category
-                                        </label>
-                                        <select
-                                            value={selectedCategory}
-                                            onChange={(e) =>
-                                                setSelectedCategory(
-                                                    e.target.value,
-                                                )
-                                            }
-                                            className="w-full rounded-md border border-gray-300 px-3 py-2"
-                                        >
-                                            <option value="">
-                                                All Categories
-                                            </option>
-                                            {categories.map((category) => (
-                                                <option
-                                                    key={category.id}
-                                                    value={category.id}
-                                                >
-                                                    {category.name}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div className="mt-4 flex gap-2">
-                                    <Button onClick={handleSearch}>
-                                        Apply Filters
-                                    </Button>
-                                </div>
-                            </div>
-                        )}
+                       
                     </div>
 
                     {events.data.length > 0 ? (
@@ -253,100 +224,9 @@ const PublicEventsIndex = ({ events, categories, filters }: Props) => {
                             {events.data.map((event) => (
                                 <div
                                     key={event.id}
-                                    className="overflow-hidden rounded-lg border bg-white shadow-sm transition-shadow hover:shadow-md"
+                                    className="animate-fade-up"
                                 >
-                                    <div className="relative h-48 bg-gray-200">
-                                        {event.images.length > 0 ? (
-                                            <img
-                                                src={event.images[0].url}
-                                                alt={event.name}
-                                                className="h-full w-full object-cover"
-                                            />
-                                        ) : (
-                                            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#0A1F44] to-[#14B8A6]">
-                                                <Calendar className="h-12 w-12 text-white" />
-                                            </div>
-                                        )}
-
-                                        <div className="absolute top-3 left-3">
-                                            <span className="rounded-full bg-white/90 px-2 py-1 text-xs font-medium text-gray-800">
-                                                {event.category.name}
-                                            </span>
-                                        </div>
-
-                                        <div className="absolute top-3 right-3">
-                                            <span
-                                                className={`rounded-full px-2 py-1 text-xs font-medium ${
-                                                    event.is_free
-                                                        ? 'bg-green-100 text-green-800'
-                                                        : 'bg-blue-100 text-blue-800'
-                                                }`}
-                                            >
-                                                {event.is_free
-                                                    ? 'Free'
-                                                    : 'Paid'}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <div className="p-6">
-                                        <h3 className="mb-2 line-clamp-2 text-lg font-semibold text-gray-900">
-                                            {event.name}
-                                        </h3>
-
-                                        <p className="mb-4 line-clamp-2 text-sm text-gray-600">
-                                            {event.description}
-                                        </p>
-
-                                        <div className="mb-4 space-y-2">
-                                            <div className="flex items-center text-sm text-gray-600">
-                                                <Calendar className="mr-2 h-4 w-4" />
-                                                {formatDate(event.start_time)}{' '}
-                                                at{' '}
-                                                {formatTime(event.start_time)}
-                                            </div>
-
-                                            <div className="flex items-center text-sm text-gray-600">
-                                                {event.is_online ? (
-                                                    <>
-                                                        <Clock className="mr-2 h-4 w-4" />
-                                                        Online Event
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <MapPin className="mr-2 h-4 w-4" />
-                                                        {event.venue_name ||
-                                                            `${event.city}, ${event.state}`}
-                                                    </>
-                                                )}
-                                            </div>
-
-                                            <div className="flex items-center text-sm text-gray-600">
-                                                <Users className="mr-2 h-4 w-4" />
-                                                {event.is_full ? (
-                                                    <span className="font-medium text-red-600">
-                                                        Event Full
-                                                    </span>
-                                                ) : (
-                                                    <span>
-                                                        {event.available_spots ===
-                                                        Infinity
-                                                            ? `${event.registration_count} registered`
-                                                            : `${event.available_spots} spots left`}
-                                                    </span>
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        <Link
-                                            href={`/events/${event.id}`}
-                                            className="block w-full"
-                                        >
-                                            <Button className="w-full bg-[#14B8A6] hover:bg-[#0d9488]">
-                                                View Details
-                                            </Button>
-                                        </Link>
-                                    </div>
+                                    <EventCard event={transformEvent(event)} />
                                 </div>
                             ))}
                         </div>

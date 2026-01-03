@@ -1,3 +1,4 @@
+import { CountdownTimer } from '@/components/countdown-timer';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
@@ -17,6 +18,7 @@ interface DashboardStats {
     totalRegistrations: number;
     upcomingEvents: number;
     recentEvents: any[];
+    nextRegisteredEvent: any | null;
 }
 
 interface Props {
@@ -32,6 +34,7 @@ export default function Dashboard({ stats }: Props) {
         totalRegistrations: 0,
         upcomingEvents: 0,
         recentEvents: [],
+        nextRegisteredEvent: null,
     };
 
     return (
@@ -124,30 +127,121 @@ export default function Dashboard({ stats }: Props) {
 
                 {/* Quick Actions */}
                 <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-                    {/* Quick Actions Card */}
-                    <div className="rounded-lg border bg-white p-6 shadow-sm">
-                        <h2 className="mb-4 text-lg font-semibold text-gray-900">
-                            Quick Actions
-                        </h2>
-                        <div className="space-y-3">
-                            <Link href="/my-events/create" className="block">
-                                <Button className="flex w-full items-center gap-2 bg-[#14B8A6] hover:bg-[#0d9488]">
-                                    <Plus className="h-4 w-4" />
-                                    Create New Event
-                                </Button>
-                            </Link>
+                    {/* Quick Actions or Countdown */}
+                    {dashboardStats.nextRegisteredEvent ? (
+                        <div className="relative overflow-hidden rounded-2xl bg-gray-900 shadow-xl transition-all hover:shadow-2xl">
+                            {/* Background Image */}
+                            <div className="absolute inset-0">
+                                {dashboardStats.nextRegisteredEvent.images &&
+                                dashboardStats.nextRegisteredEvent.images
+                                    .length > 0 ? (
+                                    <img
+                                        src={`/storage/${dashboardStats.nextRegisteredEvent.images[0].url}`}
+                                        alt={
+                                            dashboardStats.nextRegisteredEvent
+                                                .name
+                                        }
+                                        className="h-full w-full object-cover opacity-60"
+                                    />
+                                ) : (
+                                    <div className="h-full w-full bg-gradient-to-br from-fuchsia-900 to-indigo-900 opacity-60" />
+                                )}
+                                <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/60 to-transparent" />
+                            </div>
 
-                            <Link href="/events" className="block">
-                                <Button
-                                    variant="outline"
-                                    className="flex w-full items-center gap-2"
-                                >
-                                    <Eye className="h-4 w-4" />
-                                    Browse Events
-                                </Button>
-                            </Link>
+                            <div className="relative p-8">
+                                {/* Header */}
+                                <div className="mb-6 flex items-start justify-between">
+                                    <div>
+                                        <div className="mb-2 inline-flex items-center rounded-full bg-teal-500/20 px-3 py-1 text-xs font-medium text-teal-300 backdrop-blur-sm border border-teal-500/30">
+                                            Upcoming Event
+                                        </div>
+                                        <h2 className="text-2xl font-bold text-white md:text-3xl">
+                                            {
+                                                dashboardStats.nextRegisteredEvent
+                                                    .name
+                                            }
+                                        </h2>
+                                    </div>
+                                    <Link
+                                        href={`/events/${dashboardStats.nextRegisteredEvent.id}`}
+                                    >
+                                        <Button className="border border-white/20 bg-white/10 text-white backdrop-blur-md hover:bg-white/20">
+                                            View Details
+                                        </Button>
+                                    </Link>
+                                </div>
+
+                                {/* Event Info */}
+                                <div className="mb-8 flex flex-col gap-4 text-gray-300 md:flex-row md:items-center md:gap-8">
+                                    <div className="flex items-center gap-2">
+                                        <Calendar className="h-5 w-5 text-teal-400" />
+                                        <span>
+                                            {new Date(
+                                                dashboardStats.nextRegisteredEvent.start_time,
+                                            ).toLocaleDateString([], {
+                                                weekday: 'long',
+                                                month: 'long',
+                                                day: 'numeric',
+                                            })}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="h-1.5 w-1.5 rounded-full bg-gray-600" />
+                                        <span>
+                                            {new Date(
+                                                dashboardStats.nextRegisteredEvent.start_time,
+                                            ).toLocaleTimeString([], {
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                            })}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Countdown Section */}
+                                <div className="rounded-xl bg-black/20 p-6 backdrop-blur-sm border border-white/10">
+                                    <p className="mb-4 text-center text-sm font-medium uppercase tracking-wider text-gray-400">
+                                        Starting In
+                                    </p>
+                                    <CountdownTimer
+                                        targetDate={
+                                            dashboardStats.nextRegisteredEvent
+                                                .start_time
+                                        }
+                                        labelClassName="text-gray-300"
+                                    />
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    ) : (
+                        <div className="rounded-lg border bg-white p-6 shadow-sm">
+                            <h2 className="mb-4 text-lg font-semibold text-gray-900">
+                                Quick Actions
+                            </h2>
+                            <div className="space-y-3">
+                                <Link
+                                    href="/my-events/create"
+                                    className="block"
+                                >
+                                    <Button className="flex w-full items-center gap-2 bg-[#14B8A6] hover:bg-[#0d9488]">
+                                        <Plus className="h-4 w-4" />
+                                        Create New Event
+                                    </Button>
+                                </Link>
+
+                                <Link href="/events" className="block">
+                                    <Button
+                                        variant="outline"
+                                        className="flex w-full items-center gap-2"
+                                    >
+                                        <Eye className="h-4 w-4" />
+                                        Browse Events
+                                    </Button>
+                                </Link>
+                            </div>
+                        </div>
+                    )}
 
                     {/* Recent Activity */}
                     <div className="rounded-lg border bg-white p-6 shadow-sm">

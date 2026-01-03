@@ -57,7 +57,7 @@ export default function Welcome({
             <div className="overflow-hidden">
                 <Hero />
                 <FeaturedEvents events={featuredEvents || []} />
-                <Testimonials />
+                {/* <Testimonials /> */}
                 <Footer />
             </div>
         </>
@@ -97,7 +97,7 @@ function Hero() {
                             href="/blog/radiant-raises-100m-series-a-from-tailwind-ventures"
                             className="flex items-center gap-1 rounded-full bg-fuchsia-950/35 px-3 py-0.5 text-sm/6 font-medium text-white data-hover:bg-fuchsia-950/30"
                         >
-                            Browse your favorite events and conference
+                            Browse your favorite events and conferences
                             <ChevronRightIcon className="size-4" />
                         </Link>
                     }

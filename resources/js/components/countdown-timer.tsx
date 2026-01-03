@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 interface CountdownTimerProps {
     targetDate: string;
+    labelClassName?: string;
 }
 
 interface TimeLeft {
@@ -11,7 +12,7 @@ interface TimeLeft {
     seconds: number;
 }
 
-export function CountdownTimer({ targetDate }: CountdownTimerProps) {
+export function CountdownTimer({ targetDate, labelClassName = "text-gray-600" }: CountdownTimerProps) {
     const calculateTimeLeft = (): TimeLeft => {
         const difference = +new Date(targetDate) - +new Date();
 
@@ -45,7 +46,7 @@ export function CountdownTimer({ targetDate }: CountdownTimerProps) {
                 <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-gradient-to-br from-[#14B8A6] to-[#0d9488] text-2xl font-bold text-white shadow-lg">
                     {formatNumber(timeLeft.days)}
                 </div>
-                <span className="mt-2 text-xs font-medium text-gray-600">
+                <span className={`mt-2 text-xs font-medium ${labelClassName}`}>
                     Days
                 </span>
             </div>
@@ -53,7 +54,7 @@ export function CountdownTimer({ targetDate }: CountdownTimerProps) {
                 <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-gradient-to-br from-[#14B8A6] to-[#0d9488] text-2xl font-bold text-white shadow-lg">
                     {formatNumber(timeLeft.hours)}
                 </div>
-                <span className="mt-2 text-xs font-medium text-gray-600">
+                <span className={`mt-2 text-xs font-medium ${labelClassName}`}>
                     Hours
                 </span>
             </div>
@@ -61,7 +62,7 @@ export function CountdownTimer({ targetDate }: CountdownTimerProps) {
                 <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-gradient-to-br from-[#14B8A6] to-[#0d9488] text-2xl font-bold text-white shadow-lg">
                     {formatNumber(timeLeft.minutes)}
                 </div>
-                <span className="mt-2 text-xs font-medium text-gray-600">
+                <span className={`mt-2 text-xs font-medium ${labelClassName}`}>
                     Minutes
                 </span>
             </div>
@@ -69,7 +70,7 @@ export function CountdownTimer({ targetDate }: CountdownTimerProps) {
                 <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-gradient-to-br from-[#14B8A6] to-[#0d9488] text-2xl font-bold text-white shadow-lg">
                     {formatNumber(timeLeft.seconds)}
                 </div>
-                <span className="mt-2 text-xs font-medium text-gray-600">
+                <span className={`mt-2 text-xs font-medium ${labelClassName}`}>
                     Seconds
                 </span>
             </div>

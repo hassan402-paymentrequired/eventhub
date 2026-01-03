@@ -33,16 +33,16 @@ class PublicEventsController extends Controller
 
         // Date range filter
         if ($request->filled('date_from')) {
-            $query->whereDate('start_time', '>=', $request->get('date_from'));
+            $query->whereDate('date', '>=', $request->get('date_from'));
         }
 
         if ($request->filled('date_to')) {
-            $query->whereDate('start_time', '<=', $request->get('date_to'));
+            $query->whereDate('date', '<=', $request->get('date_to'));
         }
 
         // Single date filter (from welcome page)
         if ($request->filled('date')) {
-            $query->whereDate('start_time', '=', $request->get('date'));
+            $query->whereDate('date', '=', $request->get('date'));
         }
 
         // Location filter
@@ -65,7 +65,8 @@ class PublicEventsController extends Controller
             $query->where('is_free', $request->boolean('is_free'));
         }
 
-        $events = $query->orderBy('start_time')
+        $events = $query->orderBy('date', 'desc')
+            ->orderBy('is_feature')
             ->paginate(12)
             ->withQueryString();
 
