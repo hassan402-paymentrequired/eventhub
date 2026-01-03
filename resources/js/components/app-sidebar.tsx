@@ -22,7 +22,6 @@ import {
     FileDown,
     Folder,
     LayoutGrid,
-    Search,
 } from 'lucide-react';
 import AppLogo from './app-logo';
 
@@ -31,11 +30,6 @@ const mainNavItems: NavItem[] = [
         title: 'Dashboard',
         href: dashboard(),
         icon: LayoutGrid,
-    },
-    {
-        title: 'Discover Events',
-        href: '/events',
-        icon: Search,
     },
     {
         title: 'My Registrations',

@@ -7,7 +7,7 @@ use App\Http\Controllers\EventRegistrationController;
 use App\Http\Controllers\EventOwnerController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [PublicEventsController::class, 'index'])->name('home');
+Route::get('/', [EventsController::class, 'index'])->name('home');
 
 // Public event routes (no authentication required)
 Route::prefix('events')->name('public.events.')->group(function () {

@@ -14,7 +14,26 @@ class EventsController extends Controller
 
     public function index()
     {
-        return Inertia::render('welcome');
+        // Get featured events for the landing page
+        $featuredEvents = Event::query()
+            ->published()
+            ->upcoming()
+            ->with(['category', 'user', 'images'])
+            ->orderBy('start_time')
+            ->limit(6)
+            ->get();
+
+        // Add registration information
+        $featuredEvents->transform(function ($event) {
+            $event->registration_count = $event->getRegistrationCount();
+            $event->available_spots = $event->availableSpots();
+            $event->is_full = $event->isFull();
+            return $event;
+        });
+
+        return Inertia::render('welcome', [
+            'featuredEvents' => $featuredEvents
+        ]);
     }
 
     public function events()
@@ -22,6 +41,7 @@ class EventsController extends Controller
         $events = Event::query()
             ->where('user_id', Auth::id())
             ->with(['speakers', 'tickets', 'agendas', 'faqs', 'images', 'category'])
+            ->withCount('registrations')
             ->paginate();
 
         return Inertia::render('event/index', [
@@ -47,9 +67,7 @@ class EventsController extends Controller
         $agendas = $data['agenda'] ?? [];
         $ticketTypes = $data['ticket_types'] ?? [];
 
-
         try {
-
             $event = Event::create([
                 'user_id' => $data['user_id'],
                 'name' => $data['title'],
@@ -68,11 +86,11 @@ class EventsController extends Controller
                 'state' => $data['state'],
                 'city' => $data['city'],
                 'tags' => json_encode($data['tags']),
-                'date' => $data['date'],
+                'date' => $data['date'] ?? now()->format('Y-m-d'),
                 'status' => $data['status']
             ]);
 
-
+            // Create speakers
             foreach ($speakers as $speaker) {
                 $event->speakers()->create([
                     'name' => $speaker['name'],
@@ -82,20 +100,33 @@ class EventsController extends Controller
                 ]);
             }
 
+            // Create FAQs
             $event->faqs()->createMany($faqs);
-            $event->agendas()->createMany($agendas);
 
-            foreach ($ticketTypes as $tic) {
-                $event->tickets()->create([
-                    'name' => $tic['name'],
-                    'price' => $tic['price'],
-                    'quantity_available' => $tic['quantity'],
+            // Create agenda items with proper datetime formatting
+            foreach ($agendas as $agenda) {
+                $event->agendas()->create([
+                    'title' => $agenda['title'],
+                    'description' => $agenda['description'] ?? null,
+                    'start_time' => $data['start_date'] . ' ' . $agenda['start_time'],
+                    'end_time' => $data['start_date'] . ' ' . $agenda['end_time'],
                 ]);
             }
 
+            // Create tickets
+            foreach ($ticketTypes as $ticket) {
+                $event->tickets()->create([
+                    'name' => $ticket['name'],
+                    'price' => $ticket['price'],
+                    'quantity_available' => $ticket['capacity'] ?? null,
+                    'description' => $ticket['description'] ?? null,
+                ]);
+            }
+
+            // Handle image uploads
             if (!empty($data['images'])) {
                 foreach ($data['images'] as $img) {
-                    $url = $img->store('business-images', 'public');
+                    $url = $img->store('event-images', 'public');
                     $event->images()->create([
                         'url' => $url,
                     ]);
@@ -104,7 +135,8 @@ class EventsController extends Controller
 
             return redirect()->route('events.index')->with('success-toast', 'Event created successfully.');
         } catch (Exception $e) {
-            return back()->with('error-toast', 'An error occurred.');
+            \Illuminate\Support\Facades\Log::error('Event creation failed: ' . $e->getMessage());
+            return back()->with('error-toast', 'An error occurred while creating the event.');
         }
     }
 }

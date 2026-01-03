@@ -4,14 +4,45 @@ import { Footer } from '@/components/footer';
 import { Gradient } from '@/components/gradient';
 import { Navbar } from '@/components/navbar';
 import { Testimonials } from '@/components/testimonials';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import { Calendar, ChevronRightIcon, MapPin, Search } from 'lucide-react';
 import { FormEvent, useState } from 'react';
 import FeaturedEvents from './featured-event';
 
-export default function Welcome() {
-    
+interface DatabaseEvent {
+    id: string;
+    name: string;
+    description: string;
+    start_time: string;
+    end_time: string;
+    venue_name: string;
+    city: string;
+    state: string;
+    is_online: boolean;
+    is_free: boolean;
+    capacity: number;
+    registration_count: number;
+    available_spots: number;
+    is_full: boolean;
+    category: {
+        id: string;
+        name: string;
+    };
+    user: {
+        id: string;
+        name: string;
+    };
+    images: Array<{
+        id: string;
+        url: string;
+    }>;
+}
 
+export default function Welcome({
+    featuredEvents,
+}: {
+    featuredEvents?: DatabaseEvent[];
+}) {
     return (
         <>
             <Head title="Welcome">
@@ -24,7 +55,7 @@ export default function Welcome() {
 
             <div className="overflow-hidden">
                 <Hero />
-                <FeaturedEvents />
+                <FeaturedEvents events={featuredEvents || []} />
                 <Testimonials />
                 <Footer />
             </div>
@@ -41,26 +72,16 @@ function Hero() {
         e.preventDefault();
 
         // Build query parameters
-        const params = new URLSearchParams();
-        if (searchQuery) params.append('search', searchQuery);
-        if (location) params.append('location', location);
-        if (date) params.append('date', date);
+        const params: Record<string, string> = {};
+        if (searchQuery) params.search = searchQuery;
+        if (location) params.location = location;
+        if (date) params.date = date;
 
-        // For Inertia.js, you would use:
-        // router.get(`/events?${params.toString()}`);
-
-        // For demo purposes:
-        console.log('Search params:', {
-            search: searchQuery,
-            location: location,
-            date: date,
-        });
-
-        // Redirect to events page with query params
-        window.location.href = `/events?${params.toString()}`;
+        // Use Inertia router for seamless navigation
+        router.get('/events', params);
     };
 
-    const handleKeyPress = (e) => {
+    const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter') {
             handleSearch(e);
         }
@@ -80,7 +101,7 @@ function Hero() {
                         </Link>
                     }
                 />
-                <div className="pt-16 pb-24 sm:pt-24  md:pt-32 ">
+                <div className="pt-16 pb-24 sm:pt-24 md:pt-32">
                     <h1 className="mb-4 text-3xl font-bold text-gray-900 md:text-4xl">
                         Browse <span className="text-purple-600">Events</span>
                     </h1>
@@ -101,8 +122,8 @@ function Hero() {
                                     onChange={(e) =>
                                         setSearchQuery(e.target.value)
                                     }
-                                    onKeyPress={handleKeyPress}
-                                    className="h-auto outline-none w-full border-0 bg-transparent p-0 text-base placeholder:text-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0"
+                                    onKeyDown={handleKeyDown}
+                                    className="h-auto w-full border-0 bg-transparent p-0 text-base outline-none placeholder:text-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0"
                                 />
                             </div>
 
@@ -116,8 +137,8 @@ function Hero() {
                                     onChange={(e) =>
                                         setLocation(e.target.value)
                                     }
-                                    onKeyPress={handleKeyPress}
-                                    className="h-auto w-full outline-none border-0 bg-transparent p-0 text-base placeholder:text-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0"
+                                    onKeyDown={handleKeyDown}
+                                    className="h-auto w-full border-0 bg-transparent p-0 text-base outline-none placeholder:text-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0"
                                 />
                             </div>
 
@@ -129,7 +150,7 @@ function Hero() {
                                     placeholder="Any date"
                                     value={date}
                                     onChange={(e) => setDate(e.target.value)}
-                                    className="h-auto w-full outline-none border-0 bg-transparent p-0 text-base placeholder:text-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0"
+                                    className="h-auto w-full border-0 bg-transparent p-0 text-base outline-none placeholder:text-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0"
                                 />
                             </div>
 

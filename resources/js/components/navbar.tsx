@@ -4,21 +4,28 @@ import {
     DisclosurePanel,
 } from '@headlessui/react';
 // import { Bars2Icon } from '@heroicons/react/24/solid';
+import { dashboard, login } from '@/routes';
+import { type SharedData } from '@/types';
+import { usePage } from '@inertiajs/react';
 import { motion } from 'framer-motion';
+import { BadgeRussianRuble } from 'lucide-react';
 import { Link } from './link';
 import { Logo } from './logo';
 import { PlusGrid, PlusGridItem, PlusGridRow } from './plus-grid';
-import { BadgeRussianRuble } from 'lucide-react';
-import { type SharedData } from '@/types';
-import { usePage } from '@inertiajs/react';
-import { login } from '@/routes';
-
-const links = [
-    { href: '/pricing', label: 'Events' },
-    { href: login().url, label: 'login' },
-];
 
 function DesktopNav() {
+    const { auth } = usePage<SharedData>().props;
+
+    const links = auth.user
+        ? [
+              { href: '/events', label: 'Browse Events' },
+              { href: dashboard().url, label: 'Dashboard' },
+          ]
+        : [
+              { href: '/events', label: 'Browse Events' },
+              { href: login().url, label: 'Login' },
+          ];
+
     return (
         <nav className="relative hidden lg:flex">
             {links.map(({ href, label }) => (
@@ -47,6 +54,18 @@ function MobileNavButton() {
 }
 
 function MobileNav() {
+    const { auth } = usePage<SharedData>().props;
+
+    const links = auth.user
+        ? [
+              { href: '/events', label: 'Browse Events' },
+              { href: dashboard().url, label: 'Dashboard' },
+          ]
+        : [
+              { href: '/events', label: 'Browse Events' },
+              { href: login().url, label: 'Login' },
+          ];
+
     return (
         <DisclosurePanel className="lg:hidden">
             <div className="flex flex-col gap-6 py-4">
@@ -79,7 +98,6 @@ function MobileNav() {
 }
 
 export function Navbar({ banner }: { banner?: React.ReactNode }) {
-    const { auth } = usePage<SharedData>().props;
     return (
         <Disclosure as="header" className="pt-12 sm:pt-16">
             <PlusGrid>

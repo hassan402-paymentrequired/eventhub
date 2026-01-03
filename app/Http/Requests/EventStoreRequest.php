@@ -26,7 +26,7 @@ class EventStoreRequest extends FormRequest
             'description' => 'required|string',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
-            'location' => 'nullable|string|max:255',
+            'date' => 'nullable|date',
             'category_id' => 'required|exists:event_categories,id',
             'location_name' => 'nullable|string|max:255',
             'location_address' => 'nullable|string|max:255',
@@ -43,8 +43,9 @@ class EventStoreRequest extends FormRequest
             'ticket_types' => 'nullable|array',
             'ticket_types.*.name' => 'required|string|max:255',
             'ticket_types.*.price' => 'required|numeric|min:0',
-            'ticket_types.*.quantity' => 'required|integer|min:1',
-            
+            'ticket_types.*.capacity' => 'nullable|string',
+            'ticket_types.*.description' => 'nullable|string',
+
             'faqs' => 'nullable|array',
             'faqs.*.question' => 'required|string',
             'faqs.*.answer' => 'required|string',
@@ -56,7 +57,7 @@ class EventStoreRequest extends FormRequest
             'agenda.*.title' => 'required|string|max:255',
             'agenda.*.description' => 'nullable|string',
             'agenda.*.start_time' => 'required|date_format:H:i',
-            'agenda.*.end_time' => 'required|date_format:H:i|after:start_time',
+            'agenda.*.end_time' => 'required|date_format:H:i|after:agenda.*.start_time',
 
             'images' => 'nullable|array',
             'images.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -66,8 +67,6 @@ class EventStoreRequest extends FormRequest
             'speakers.*.title' => 'required|string|max:255',
             'speakers.*.bio' => 'nullable|string',
             'speakers.*.image_url' => 'nullable|string',
-
-            
         ];
     }
 }

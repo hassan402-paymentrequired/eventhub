@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Models\EventCategory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class PublicEventsController extends Controller
@@ -37,6 +38,11 @@ class PublicEventsController extends Controller
 
         if ($request->filled('date_to')) {
             $query->whereDate('start_time', '<=', $request->get('date_to'));
+        }
+
+        // Single date filter (from welcome page)
+        if ($request->filled('date')) {
+            $query->whereDate('start_time', '=', $request->get('date'));
         }
 
         // Location filter
@@ -76,7 +82,7 @@ class PublicEventsController extends Controller
         return Inertia::render('PublicEvents/Index', [
             'events' => $events,
             'categories' => $categories,
-            'filters' => $request->only(['search', 'category', 'date_from', 'date_to', 'location', 'is_online', 'is_free'])
+            'filters' => $request->only(['search', 'category', 'date_from', 'date_to', 'date', 'location', 'is_online', 'is_free'])
         ]);
     }
 
@@ -105,7 +111,7 @@ class PublicEventsController extends Controller
         $event->is_full = $event->isFull();
 
         // Check if current user is registered (if authenticated)
-        $event->user_registered = auth()->check() ? $event->isUserRegistered(auth()->user()) : false;
+        $event->user_registered = Auth::check() ? $event->isUserRegistered(Auth::user()) : false;
 
         return Inertia::render('PublicEvents/Show', [
             'event' => $event
