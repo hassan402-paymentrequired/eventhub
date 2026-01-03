@@ -24,10 +24,10 @@ class EventStoreRequest extends FormRequest
         return [
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
-            'date' => 'nullable|date',
-            'category_id' => 'required|exists:event_categories,id',
+            'date' => 'required|date',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i|after:start_time',
+            'category' => 'required|exists:event_categories,id',
             'location_name' => 'nullable|string|max:255',
             'location_address' => 'nullable|string|max:255',
             'location_lat' => 'nullable|numeric',
@@ -57,7 +57,7 @@ class EventStoreRequest extends FormRequest
             'agenda.*.title' => 'required|string|max:255',
             'agenda.*.description' => 'nullable|string',
             'agenda.*.start_time' => 'required|date_format:H:i',
-            'agenda.*.end_time' => 'required|date_format:H:i|after:agenda.*.start_time',
+            'agenda.*.end_time' => 'required|date_format:H:i',
 
             'images' => 'nullable|array',
             'images.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -68,6 +68,32 @@ class EventStoreRequest extends FormRequest
             'speakers.*.bio' => 'nullable|string',
             'speakers.*.image_url' => 'nullable|string',
         ];
+    }
+
+    /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation()
+    {
+        // Combine date and time fields into datetime strings
+        if ($this->has('date') && $this->has('start_time')) {
+            $this->merge([
+                'start_date' => $this->date . ' ' . $this->start_time,
+            ]);
+        }
+
+        if ($this->has('date') && $this->has('end_time')) {
+            $this->merge([
+                'end_date' => $this->date . ' ' . $this->end_time,
+            ]);
+        }
+
+        // Map category to category_id
+        if ($this->has('category')) {
+            $this->merge([
+                'category_id' => $this->category,
+            ]);
+        }
     }
 }
 

@@ -15,7 +15,7 @@ export interface Event {
   tickets: TicketType[],
   agendas: Agenda[],
   faqs: Faq[],
-  images: Array<{url: string, id: string}>,
+  images: Array<{ url: string, id: string }>,
   category: Category[]
 }
 
@@ -31,7 +31,7 @@ export interface Speaker { name: string, title: string, bio: string, image_url: 
 
 export interface Faq { id?: string, question: string, answer: string }
 
-export interface Agenda { time: string, title: string, description: string }
+export interface Agenda { start_time: string, end_time: string, title: string, description: string }
 
 export interface EventFormData {
   title: string,
@@ -44,7 +44,7 @@ export interface EventFormData {
   online_link: string,
   location_name: string,
   location_address: string,
-  location_lat: null ,
+  location_lat: null,
   location_lng: null,
   is_free: true,
   capacity: string,

@@ -6,21 +6,30 @@ import events from '@/routes/events';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
 import { motion } from 'framer-motion';
-import { Loader2, Save, Send, Calendar, MapPin, DollarSign, Users, Eye } from 'lucide-react';
+import {
+    Calendar,
+    DollarSign,
+    Eye,
+    Loader2,
+    MapPin,
+    Save,
+    Send,
+    Users,
+} from 'lucide-react';
 import { useState } from 'react';
 import BasicInfo from './components/basic-info';
 import LocationInfo from './components/location-info';
 import ReviewInfo from './components/review-info';
 import SpeakerInfo from './components/speaker-info';
 import TicketInfo from './components/ticket-info';
-import { Category, EventFormData,  Speaker } from './types';
+import { Category, EventFormData, Speaker } from './types';
 
 export const Eventsteps = [
-  { title: 'Basic Info', icon: Calendar },
-  { title: 'Location', icon: MapPin },
-  { title: 'Tickets', icon: DollarSign },
-  { title: 'Details', icon: Users },
-  { title: 'Review', icon: Eye }
+    { title: 'Basic Info', icon: Calendar },
+    { title: 'Location', icon: MapPin },
+    { title: 'Tickets', icon: DollarSign },
+    { title: 'Details', icon: Users },
+    { title: 'Review', icon: Eye },
 ];
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -64,14 +73,13 @@ const CreateEvent = ({ categories }: { categories: Category[] }) => {
     });
     const [tagInput, setTagInput] = useState('');
 
-
-     const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
+    const [autocomplete, setAutocomplete] =
+        useState<google.maps.places.Autocomplete | null>(null);
 
     const onLoad = (autocompleteInstance: google.maps.places.Autocomplete) => {
         setAutocomplete(autocompleteInstance);
     };
 
-    
     const onPlaceChanged = () => {
         if (autocomplete !== null) {
             const place = autocomplete.getPlace();
@@ -101,7 +109,6 @@ const CreateEvent = ({ categories }: { categories: Category[] }) => {
             }
         }
     };
-
 
     const handleInputChange = (field: keyof EventFormData, value: any) => {
         setData(field, value);
@@ -170,13 +177,13 @@ const CreateEvent = ({ categories }: { categories: Category[] }) => {
     const addAgendaItem = () => {
         setData('agenda', [
             ...data.agenda,
-            { time: '', title: '', description: '' },
+            { start_time: '', end_time: '', title: '', description: '' },
         ]);
     };
 
     const updateAgendaItem = (
         index: number,
-        field: 'time' | 'title' | 'description',
+        field: 'start_time' | 'end_time' | 'title' | 'description',
         value: string,
     ) => {
         const updated = data.agenda.map((item, i) =>

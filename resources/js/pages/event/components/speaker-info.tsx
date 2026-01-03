@@ -15,18 +15,20 @@ interface Props {
     eventData: EventFormData;
     addSpeaker: () => void;
     removeSpeaker: (index: number) => void;
-    updateSpeaker: ( index: number,
-            field: keyof Speaker,
-            value: string,) => void;
+    updateSpeaker: (index: number, field: keyof Speaker, value: string) => void;
     addAgendaItem: () => void;
-    updateFaq: (index: number,
+    updateFaq: (
+        index: number,
         field: 'question' | 'answer',
-        value: string,) => void;
+        value: string,
+    ) => void;
     removeFaq: (index: number) => void;
     addFaq: () => void;
-    updateAgendaItem: ( index: number,
-        field: 'time' | 'title' | 'description',
-        value: string,) => void;
+    updateAgendaItem: (
+        index: number,
+        field: 'start_time' | 'end_time' | 'title' | 'description',
+        value: string,
+    ) => void;
     removeAgendaItem: (index: number) => void;
 }
 
@@ -166,15 +168,27 @@ const SpeakerInfo = ({
                                     <Trash2 className="h-4 w-4 text-red-500" />
                                 </Button>
                             </div>
-                            <div className="grid gap-3 md:grid-cols-4">
+                            <div className="grid gap-3 md:grid-cols-5">
                                 <Input
                                     type="time"
-                                    placeholder="Time"
-                                    value={item.time}
+                                    placeholder="Start Time"
+                                    value={item.start_time}
                                     onChange={(e) =>
                                         updateAgendaItem(
                                             i,
-                                            'time',
+                                            'start_time',
+                                            e.target.value,
+                                        )
+                                    }
+                                />
+                                <Input
+                                    type="time"
+                                    placeholder="End Time"
+                                    value={item.end_time}
+                                    onChange={(e) =>
+                                        updateAgendaItem(
+                                            i,
+                                            'end_time',
                                             e.target.value,
                                         )
                                     }
