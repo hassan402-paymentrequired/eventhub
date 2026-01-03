@@ -19,6 +19,7 @@ interface Props {
     addTicketType: () => void;
     removeTicketType: (index: number) => void;
     updateTicketType: (index: number, field: string, value: string) => void;
+    errors: any
 }
 
 const TicketInfo = ({
@@ -27,6 +28,7 @@ const TicketInfo = ({
     removeTicketType,
     addTicketType,
     updateTicketType,
+    errors
 }: Props) => {
     return (
         <Card>

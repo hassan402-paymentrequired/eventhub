@@ -75,10 +75,10 @@ class EventsController extends Controller
                 'user_id' => $data['user_id'],
                 'name' => $data['title'],
                 'description' => $data['description'],
-                'start_time' => $data['start_date'],
-                'end_time' => $data['end_date'],
+                'start_time' => $data['start_time'],
+                'end_time' => $data['end_time'],
                 'venue_name' => $data['location_name'] ?? null,
-                'event_category_id' => $data['category_id'],
+                'event_category_id' => $data['category'],
                 'address' => $data['location_address'] ?? null,
                 'latitude' => $data['location_lat'] ?? null,
                 'longitude' => $data['location_lng'] ?? null,
@@ -124,8 +124,8 @@ class EventsController extends Controller
                         $event->agendas()->create([
                             'title' => $agenda['title'],
                             'description' => $agenda['description'] ?? null,
-                            'start_time' => $data['start_date'] . ' ' . $agenda['start_time'],
-                            'end_time' => $data['start_date'] . ' ' . $agenda['end_time'],
+                            'start_time' => $data['start_time'] . ' ' . $agenda['start_time'],
+                            'end_time' => $data['start_time'] . ' ' . $agenda['end_time'],
                         ]);
                     }
                 }

@@ -455,6 +455,7 @@ const CreateEvent = ({ categories }: { categories: Category[] }) => {
                                 removeTicketType={removeTicketType}
                                 eventData={data}
                                 handleInputChange={handleInputChange}
+                                errors={errors}
                             />
                         )}
 
