@@ -30,11 +30,22 @@ class DashboardController extends Controller
             ->limit(3)
             ->get();
 
+        // Get next upcoming event user is registered for
+        $nextRegisteredEvent = Event::whereHas('registrations', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })
+            ->where('start_time', '>', now())
+            ->where('status', 'published')
+            ->with(['category', 'images'])
+            ->orderBy('start_time', 'asc')
+            ->first();
+
         $stats = [
             'totalEvents' => $totalEvents,
             'totalRegistrations' => $totalRegistrations,
             'upcomingEvents' => $upcomingEvents,
-            'recentEvents' => $recentEvents
+            'recentEvents' => $recentEvents,
+            'nextRegisteredEvent' => $nextRegisteredEvent
         ];
 
         return Inertia::render('dashboard', [
