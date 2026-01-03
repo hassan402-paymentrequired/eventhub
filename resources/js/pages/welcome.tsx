@@ -8,6 +8,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import { Calendar, ChevronRightIcon, MapPin, Search } from 'lucide-react';
 import { FormEvent, useState } from 'react';
 import FeaturedEvents from './featured-event';
+import AppLayout from '@/layouts/app/app';
 
 interface DatabaseEvent {
     id: string;
@@ -101,6 +102,8 @@ function Hero() {
                         </Link>
                     }
                 />
+
+
                 <div className="pt-16 pb-24 sm:pt-24 md:pt-32">
                     <h1 className="mb-4 text-3xl font-bold text-gray-900 md:text-4xl">
                         Browse <span className="text-purple-600">Events</span>
@@ -165,6 +168,8 @@ function Hero() {
                         </div>
                     </form>
                 </div>
+
+
             </Container>
         </div>
     );

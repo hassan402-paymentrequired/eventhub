@@ -44,7 +44,7 @@ interface Props {
     events: {
         data: Event[];
         links: any[];
-        meta: unknown;
+        meta: any;
     };
 }
 
