@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from '@/components/ui/button';
+import { DatePicker } from '@/components/ui/date-picker';
+import { format } from 'date-fns';
 import {
     Card,
     CardContent,
@@ -167,16 +169,16 @@ const BasicInfo = ({
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-3">
-                    <div>
+                    <div className="flex flex-col space-y-1.5">
                         <Label htmlFor="date">Date *</Label>
-                        <Input
-                            id="date"
-                            type="date"
-                            value={eventData.date}
-                            onChange={(e) =>
-                                handleInputChange('date', e.target.value)
-                            }
-                            className="mt-1"
+                        <DatePicker
+                            date={eventData.date ? new Date(eventData.date) : undefined}
+                            setDate={(date) => {
+                                handleInputChange(
+                                    'date',
+                                    date ? format(date, 'yyyy-MM-dd') : ''
+                                );
+                            }}
                         />
                         {errors.date && (
                             <p className="mt-1 text-sm text-red-500">
@@ -184,34 +186,38 @@ const BasicInfo = ({
                             </p>
                         )}
                     </div>
-                    <div>
+                    <div className="flex flex-col space-y-1.5">
                         <Label htmlFor="start_time">Start Time *</Label>
-                        <Input
-                            id="start_time"
-                            type="time"
-                            value={eventData.start_time}
-                            onChange={(e) =>
-                                handleInputChange('start_time', e.target.value)
-                            }
-                            className="mt-1"
-                        />
+                        <div className="relative">
+                            <Input
+                                id="start_time"
+                                type="time"
+                                value={eventData.start_time}
+                                onChange={(e) =>
+                                    handleInputChange('start_time', e.target.value)
+                                }
+                                className="block w-full"
+                            />
+                        </div>
                         {errors.start_time && (
                             <p className="mt-1 text-sm text-red-500">
                                 {errors.start_time}
                             </p>
                         )}
                     </div>
-                    <div>
+                    <div className="flex flex-col space-y-1.5">
                         <Label htmlFor="end_time">End Time *</Label>
-                        <Input
-                            id="end_time"
-                            type="time"
-                            value={eventData.end_time}
-                            onChange={(e) =>
-                                handleInputChange('end_time', e.target.value)
-                            }
-                            className="mt-1"
-                        />
+                        <div className="relative">
+                            <Input
+                                id="end_time"
+                                type="time"
+                                value={eventData.end_time}
+                                onChange={(e) =>
+                                    handleInputChange('end_time', e.target.value)
+                                }
+                                className="block w-full"
+                            />
+                        </div>
                         {errors.end_time && (
                             <p className="mt-1 text-sm text-red-500">
                                 {errors.end_time}

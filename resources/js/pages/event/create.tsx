@@ -330,202 +330,281 @@ const CreateEvent = ({ categories }: { categories: Category[] }) => {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Create events" />
+            <Head title="Create Event" />
 
-            <div className="min-h-screen bg-gray-50 py-8">
+            <div className="min-h-screen bg-gray-50/50 py-8">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    {/* Header */}
-                    <div className="mb-8">
-                        <h1 className="text-3xl font-bold text-[#0A1F44]">
-                            Create New Event
-                        </h1>
-                        <p className="mt-1 text-gray-500">
-                            Fill in the details to create your event
-                        </p>
-                    </div>
-
-                    {/* Error Summary */}
-                    {Object.keys(errors).length > 0 && (
-                        <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-4">
-                            <div className="flex items-start">
-                                <div className="flex-shrink-0">
-                                    <svg
-                                        className="h-5 w-5 text-red-400"
-                                        viewBox="0 0 20 20"
-                                        fill="currentColor"
-                                    >
-                                        <path
-                                            fillRule="evenodd"
-                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                                            clipRule="evenodd"
-                                        />
-                                    </svg>
+                    <div className="grid gap-8 lg:grid-cols-12">
+                        {/* Sidebar Stepper */}
+                        <div className="lg:col-span-3">
+                            <div className="sticky top-8 space-y-8">
+                                <div>
+                                    <h1 className="text-2xl font-bold text-gray-900">
+                                        Create Event
+                                    </h1>
+                                    <p className="mt-2 text-sm text-gray-500">
+                                        Share your event with the world.
+                                    </p>
                                 </div>
-                                <div className="ml-3">
-                                    <h3 className="text-sm font-medium text-red-800">
-                                        There{' '}
-                                        {Object.keys(errors).length === 1
-                                            ? 'is'
-                                            : 'are'}{' '}
-                                        {Object.keys(errors).length} error
-                                        {Object.keys(errors).length === 1
-                                            ? ''
-                                            : 's'}{' '}
-                                        with your submission
-                                    </h3>
-                                    <div className="mt-2 text-sm text-red-700">
-                                        <p>
-                                            Please review the form and correct
-                                            the highlighted fields.
-                                        </p>
-                                    </div>
+
+                                <nav className="space-y-1">
+                                    {Eventsteps.map((step, i) => {
+                                        const hasErrors = getStepErrors(i);
+                                        const isActive = activeStep === i;
+                                        const isCompleted = activeStep > i;
+
+                                        return (
+                                            <div
+                                                key={i}
+                                                className="relative pb-8 last:pb-0"
+                                            >
+                                                {/* Connecting Line */}
+                                                {i !== Eventsteps.length - 1 && (
+                                                    <div
+                                                        className={`absolute left-3.5 top-8 -ml-px h-full w-0.5 ${
+                                                            isCompleted
+                                                                ? 'bg-teal-500'
+                                                                : 'bg-gray-200'
+                                                        }`}
+                                                        aria-hidden="true"
+                                                    />
+                                                )}
+
+                                                <button
+                                                    onClick={() =>
+                                                        setActiveStep(i)
+                                                    }
+                                                    disabled={i > activeStep && !isCompleted} // Optional: restrict jumping forward
+                                                    className="group relative flex items-start"
+                                                >
+                                                    <span className="flex h-9 items-center">
+                                                        <span
+                                                            className={`relative z-10 flex h-7 w-7 items-center justify-center rounded-full border-2 transition-colors ${
+                                                                isActive
+                                                                    ? 'border-teal-500 bg-white'
+                                                                    : isCompleted
+                                                                    ? 'border-teal-500 bg-teal-500'
+                                                                    : hasErrors
+                                                                    ? 'border-red-500 bg-white'
+                                                                    : 'border-gray-300 bg-white'
+                                                            }`}
+                                                        >
+                                                            {isCompleted ? (
+                                                                <svg
+                                                                    className="h-4 w-4 text-white"
+                                                                    viewBox="0 0 20 20"
+                                                                    fill="currentColor"
+                                                                >
+                                                                    <path
+                                                                        fillRule="evenodd"
+                                                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                                        clipRule="evenodd"
+                                                                    />
+                                                                </svg>
+                                                            ) : (
+                                                                <step.icon
+                                                                    className={`h-3.5 w-3.5 ${
+                                                                        isActive
+                                                                            ? 'text-teal-500'
+                                                                            : hasErrors
+                                                                            ? 'text-red-500'
+                                                                            : 'text-gray-400'
+                                                                    }`}
+                                                                />
+                                                            )}
+                                                        </span>
+                                                    </span>
+                                                    <span className="ml-4 flex min-w-0 flex-col text-left">
+                                                        <span
+                                                            className={`text-sm font-semibold tracking-wide ${
+                                                                isActive
+                                                                    ? 'text-teal-600'
+                                                                    : isCompleted
+                                                                    ? 'text-gray-900'
+                                                                    : 'text-gray-500'
+                                                            }`}
+                                                        >
+                                                            {step.title}
+                                                        </span>
+                                                    </span>
+                                                </button>
+                                            </div>
+                                        );
+                                    })}
+                                </nav>
+                                
+                                {/* Draft Status */}
+                                <div className="rounded-xl bg-blue-50 p-4">
+                                     <div className="flex">
+                                        <div className="flex-shrink-0">
+                                            <div className="h-2 w-2 rounded-full bg-blue-400 mt-2"></div>
+                                        </div>
+                                        <div className="ml-3">
+                                            <h3 className="text-sm font-medium text-blue-800">Draft Saved</h3>
+                                            <div className="mt-1 text-sm text-blue-700">
+                                                <p>Last saved just now</p>
+                                            </div>
+                                        </div>
+                                     </div>
                                 </div>
                             </div>
                         </div>
-                    )}
 
-                    {/* Steps */}
-                    <div className="mb-8 overflow-x-auto">
-                        <div className="flex min-w-max gap-2">
-                            {Eventsteps.map((step, i) => {
-                                const hasErrors = getStepErrors(i);
-                                return (
-                                    <button
-                                        key={i}
-                                        onClick={() => setActiveStep(i)}
-                                        className={`relative flex items-center gap-2 rounded-full px-4 py-2 transition-all ${
-                                            activeStep === i
-                                                ? 'bg-[#14B8A6] text-white'
-                                                : hasErrors
-                                                  ? 'border border-red-200 bg-red-50 text-red-600 hover:bg-red-100'
-                                                  : 'bg-white text-gray-600 hover:bg-gray-100'
-                                        }`}
-                                    >
-                                        <step.icon className="h-4 w-4" />
-                                        <span className="font-medium">
-                                            {step.title}
-                                        </span>
-                                        {hasErrors && (
-                                            <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                                                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
-                                                <span className="relative inline-flex h-3 w-3 rounded-full bg-red-500"></span>
-                                            </span>
-                                        )}
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    </div>
-
-                    {/* Form Sections */}
-                    <motion.div
-                        key={activeStep}
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.3 }}
-                    >
-                        {activeStep === 0 && (
-                            <BasicInfo
-                                eventData={data}
-                                addTag={addTag}
-                                removeTag={removeTag}
-                                categories={categories}
-                                handleInputChange={handleInputChange}
-                                handleImageUpload={handleImageUpload}
-                                tagInput={tagInput}
-                                setTagInput={setTagInput}
-                                errors={errors}
-                            />
-                        )}
-
-                        {activeStep === 1 && (
-                            <LocationInfo
-                                eventData={data}
-                                handleInputChange={handleInputChange}
-                                onLoad={onLoad}
-                                onPlaceChanged={onPlaceChanged}
-                                errors={errors}
-                            />
-                        )}
-
-                        {activeStep === 2 && (
-                            <TicketInfo
-                                updateTicketType={updateTicketType}
-                                addTicketType={addTicketType}
-                                removeTicketType={removeTicketType}
-                                eventData={data}
-                                handleInputChange={handleInputChange}
-                                errors={errors}
-                            />
-                        )}
-
-                        {activeStep === 3 && (
-                            <SpeakerInfo
-                                eventData={data}
-                                addAgendaItem={addAgendaItem}
-                                addFaq={addFaq}
-                                addSpeaker={addSpeaker}
-                                removeAgendaItem={removeAgendaItem}
-                                updateAgendaItem={updateAgendaItem}
-                                removeFaq={removeFaq}
-                                removeSpeaker={removeSpeaker}
-                                updateFaq={updateFaq}
-                                updateSpeaker={updateSpeaker}
-                            />
-                        )}
-
-                        {activeStep === 4 && <ReviewInfo eventData={data} />}
-                    </motion.div>
-
-                    {/* Navigation */}
-                    <div className="mt-8 flex items-center justify-between">
-                        <Button
-                            variant="outline"
-                            onClick={() =>
-                                setActiveStep(Math.max(0, activeStep - 1))
-                            }
-                            disabled={activeStep === 0}
-                        >
-                            Previous
-                        </Button>
-
-                        <div className="flex gap-3">
-                            <Button
-                                variant="outline"
-                                onClick={() => saveEvent('draft')}
-                                disabled={processing}
-                            >
-                                {processing ? (
-                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                ) : (
-                                    <Save className="mr-2 h-4 w-4" />
-                                )}
-                                Save Draft
-                            </Button>
-
-                            {activeStep < 4 ? (
-                                <Button
-                                    onClick={() =>
-                                        setActiveStep(activeStep + 1)
-                                    }
-                                    className="bg-[#14B8A6] hover:bg-[#0d9488]"
-                                >
-                                    Next
-                                </Button>
-                            ) : (
-                                <Button
-                                    onClick={() => saveEvent('published')}
-                                    disabled={processing}
-                                    className="bg-[#0A1F44] hover:bg-[#0A1F44]/90"
-                                >
-                                    {processing ? (
-                                        <Loader2 className="h-4 w-4 animate-spin" />
-                                    ) : (
-                                        <Send className="mr-2 h-4 w-4" />
-                                    )}
-                                    Publish Event
-                                </Button>
+                        {/* Main Content Info */}
+                        <div className="lg:col-span-9">
+                            {/* Error Summary */}
+                            {Object.keys(errors).length > 0 && (
+                                <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-4">
+                                    <div className="flex items-start">
+                                        <div className="flex-shrink-0">
+                                            <svg
+                                                className="h-5 w-5 text-red-400"
+                                                viewBox="0 0 20 20"
+                                                fill="currentColor"
+                                            >
+                                                <path
+                                                    fillRule="evenodd"
+                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                                    clipRule="evenodd"
+                                                />
+                                            </svg>
+                                        </div>
+                                        <div className="ml-3">
+                                            <h3 className="text-sm font-medium text-red-800">
+                                                There{' '}
+                                                {Object.keys(errors).length === 1
+                                                    ? 'is'
+                                                    : 'are'}{' '}
+                                                {Object.keys(errors).length} error
+                                                {Object.keys(errors).length === 1
+                                                    ? ''
+                                                    : 's'}{' '}
+                                                with your submission
+                                            </h3>
+                                        </div>
+                                    </div>
+                                </div>
                             )}
+
+                             <div className="rounded-2xl border border-gray-100 bg-white shadow-sm">
+                                <div className="p-8">
+                                    <motion.div
+                                        key={activeStep}
+                                        initial={{ opacity: 0, x: 10 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ duration: 0.3 }}
+                                    >
+                                        {activeStep === 0 && (
+                                            <BasicInfo
+                                                eventData={data}
+                                                addTag={addTag}
+                                                removeTag={removeTag}
+                                                categories={categories}
+                                                handleInputChange={handleInputChange}
+                                                handleImageUpload={handleImageUpload}
+                                                tagInput={tagInput}
+                                                setTagInput={setTagInput}
+                                                errors={errors}
+                                            />
+                                        )}
+
+                                        {activeStep === 1 && (
+                                            <LocationInfo
+                                                eventData={data}
+                                                handleInputChange={handleInputChange}
+                                                onLoad={onLoad}
+                                                onPlaceChanged={onPlaceChanged}
+                                                errors={errors}
+                                            />
+                                        )}
+
+                                        {activeStep === 2 && (
+                                            <TicketInfo
+                                                updateTicketType={updateTicketType}
+                                                addTicketType={addTicketType}
+                                                removeTicketType={removeTicketType}
+                                                eventData={data}
+                                                handleInputChange={handleInputChange}
+                                                errors={errors}
+                                            />
+                                        )}
+
+                                        {activeStep === 3 && (
+                                            <SpeakerInfo
+                                                eventData={data}
+                                                addAgendaItem={addAgendaItem}
+                                                addFaq={addFaq}
+                                                addSpeaker={addSpeaker}
+                                                removeAgendaItem={removeAgendaItem}
+                                                updateAgendaItem={updateAgendaItem}
+                                                removeFaq={removeFaq}
+                                                removeSpeaker={removeSpeaker}
+                                                updateFaq={updateFaq}
+                                                updateSpeaker={updateSpeaker}
+                                            />
+                                        )}
+
+                                        {activeStep === 4 && <ReviewInfo eventData={data} />}
+                                    </motion.div>
+                                </div>
+
+                                {/* Form Footer / Navigation */}
+                                <div className="border-t border-gray-100 bg-gray-50/50 p-6 px-8 rounded-b-2xl flex items-center justify-between">
+                                    <Button
+                                        variant="outline"
+                                        onClick={() =>
+                                            setActiveStep(Math.max(0, activeStep - 1))
+                                        }
+                                        disabled={activeStep === 0}
+                                        className="bg-white border-gray-200"
+                                    >
+                                        Back
+                                    </Button>
+
+                                    <div className="flex gap-3">
+                                        <Button
+                                            variant="outline"
+                                            onClick={() => saveEvent('draft')}
+                                            disabled={processing}
+                                            className="bg-white border-gray-200"
+                                        >
+                                            {processing ? (
+                                                <Loader2 className="h-4 w-4 animate-spin" />
+                                            ) : (
+                                                <Save className="mr-2 h-4 w-4" />
+                                            )}
+                                            Save Draft
+                                        </Button>
+
+                                        {activeStep < 4 ? (
+                                            <Button
+                                                onClick={() =>
+                                                    setActiveStep(activeStep + 1)
+                                                }
+                                                className="bg-[#14B8A6] hover:bg-[#0d9488] shadow-lg shadow-teal-500/20"
+                                            >
+                                                Next Step
+                                                <svg className="ml-2 -mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                                                </svg>
+                                            </Button>
+                                        ) : (
+                                            <Button
+                                                onClick={() => saveEvent('published')}
+                                                disabled={processing}
+                                                className="bg-[#0A1F44] hover:bg-[#0A1F44]/90 shadow-lg shadow-blue-900/20"
+                                            >
+                                                {processing ? (
+                                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                                ) : (
+                                                    <Send className="mr-2 h-4 w-4" />
+                                                )}
+                                                Publish Event
+                                            </Button>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

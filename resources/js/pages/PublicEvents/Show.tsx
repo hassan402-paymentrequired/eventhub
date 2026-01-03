@@ -193,7 +193,7 @@ const PublicEventShow = ({ event }: Props) => {
                         {/* Main Content */}
                         <div className="space-y-8 lg:col-span-2">
                             {/* Event Details */}
-                            <div className="rounded-2xl border border-gray-100 bg-white p-8 shadow-sm">
+                            <div className="rounded border border-gray-100 bg-white p-8 shadow-sm">
                                 <h2 className="mb-6 text-2xl font-bold text-gray-900">
                                     About This Event
                                 </h2>
@@ -206,7 +206,7 @@ const PublicEventShow = ({ event }: Props) => {
 
                             {/* Event Schedule/Agenda */}
                             {event.agendas.length > 0 && (
-                                <div className="rounded-2xl border border-gray-100 bg-white p-8 shadow-sm">
+                                <div className="rounded border border-gray-100 bg-white p-8 shadow-sm">
                                     <h2 className="mb-6 text-2xl font-bold text-gray-900">
                                         Event Schedule
                                     </h2>
@@ -252,7 +252,7 @@ const PublicEventShow = ({ event }: Props) => {
 
                             {/* Speakers */}
                             {event.speakers.length > 0 && (
-                                <div className="rounded-2xl border border-gray-100 bg-white p-8 shadow-sm">
+                                <div className="rounded border border-gray-100 bg-white p-8 shadow-sm">
                                     <h2 className="mb-6 text-2xl font-bold text-gray-900">
                                         Featured Speakers
                                     </h2>
@@ -298,7 +298,7 @@ const PublicEventShow = ({ event }: Props) => {
 
                             {/* FAQs */}
                             {event.faqs.length > 0 && (
-                                <div className="rounded-2xl border border-gray-100 bg-white p-8 shadow-sm">
+                                <div className="rounded border border-gray-100 bg-white p-8 shadow-sm">
                                     <h2 className="mb-6 text-2xl font-bold text-gray-900">
                                         Frequently Asked Questions
                                     </h2>
@@ -323,7 +323,7 @@ const PublicEventShow = ({ event }: Props) => {
 
                             {/* Additional Images */}
                             {event.images.length > 1 && (
-                                <div className="rounded-2xl border border-gray-100 bg-white p-8 shadow-sm">
+                                <div className="rounded border border-gray-100 bg-white p-8 shadow-sm">
                                     <h2 className="mb-6 flex items-center gap-2 text-2xl font-bold text-gray-900">
                                         <ImageIcon className="h-6 w-6 text-teal-600" />
                                         Event Gallery
@@ -349,7 +349,7 @@ const PublicEventShow = ({ event }: Props) => {
                         {/* Sidebar */}
                         <div className="space-y-6">
                             {/* Registration Card */}
-                            <div className="sticky top-6 rounded-2xl border border-gray-100 bg-white p-6 shadow-xl shadow-gray-200/50">
+                            <div className="sticky top-6 rounded border border-gray-100 bg-white p-6 shadow-xl shadow-gray-200/50">
                                 <div className="mb-6">
                                     <div className="mb-1 text-sm font-medium text-gray-500">
                                         price
@@ -452,7 +452,7 @@ const PublicEventShow = ({ event }: Props) => {
                             </div>
 
                             {/* Event Info Card */}
-                            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-xl shadow-gray-200/50">
+                            <div className="rounded border border-gray-100 bg-white p-6 shadow-xl shadow-gray-200/50">
                                 <h3 className="mb-4 text-lg font-bold text-gray-900">
                                     Event Details
                                 </h3>
@@ -581,7 +581,7 @@ const PublicEventShow = ({ event }: Props) => {
 
                             {/* Tags (if any) */}
                             {event.tags && (
-                                <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-xl shadow-gray-200/50">
+                                <div className="rounded border border-gray-100 bg-white p-6 shadow-xl shadow-gray-200/50">
                                     <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-gray-500">
                                         Tags
                                     </h3>
