@@ -143,7 +143,7 @@ const PublicEventsIndex = ({ events, categories, filters }: Props) => {
                     <div className="mb-8">
                         <div className="mb-4 flex items-center justify-between">
                             <h2 className="text-2xl font-bold text-gray-900">
-                                Upcoming Events ({events.meta.total})
+                                Upcoming Events ({events?.meta?.total})
                             </h2>
                             <Button
                                 variant="outline"
