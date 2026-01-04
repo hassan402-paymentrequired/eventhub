@@ -3,47 +3,13 @@ import { Container } from '@/components/container';
 import { Footer } from '@/components/footer';
 import { Gradient } from '@/components/gradient';
 import { Navbar } from '@/components/navbar';
-import { Testimonials } from '@/components/testimonials';
 import { Head, Link, router } from '@inertiajs/react';
 import { Calendar, ChevronRightIcon, MapPin, Search } from 'lucide-react';
 import { FormEvent, useState } from 'react';
 import FeaturedEvents from './featured-event';
-import AppLayout from '@/layouts/app/app';
+import PopularEvents from './popular-events';
 
-interface DatabaseEvent {
-    id: string;
-    name: string;
-    description: string;
-    start_time: string;
-    end_time: string;
-    venue_name: string;
-    city: string;
-    state: string;
-    is_online: boolean;
-    is_free: boolean;
-    capacity: number;
-    registration_count: number;
-    available_spots: number;
-    is_full: boolean;
-    category: {
-        id: string;
-        name: string;
-    };
-    user: {
-        id: string;
-        name: string;
-    };
-    images: Array<{
-        id: string;
-        url: string;
-    }>;
-}
-
-export default function Welcome({
-    featuredEvents,
-}: {
-    featuredEvents?: DatabaseEvent[];
-}) {
+export default function Welcome() {
     return (
         <>
             <Head title="Welcome">
@@ -56,8 +22,8 @@ export default function Welcome({
 
             <div className="overflow-hidden">
                 <Hero />
-                <FeaturedEvents events={featuredEvents || []} />
-                {/* <Testimonials /> */}
+                <FeaturedEvents />
+                <PopularEvents />
                 <Footer />
             </div>
         </>
@@ -105,10 +71,10 @@ function Hero() {
 
 
                 <div className="pt-16 pb-24 sm:pt-24 md:pt-32">
-                    <h1 className="mb-4 text-3xl font-bold text-gray-900 md:text-4xl">
+                    <h1 className="mb-4 text-3xl font-bold text-gray-900 md:text-4xl text-center">
                         Browse <span className="text-purple-600">Events</span>
                     </h1>
-                    <p className="mb-8 max-w-xl text-gray-600">
+                    <p className="mb-8 max-w-xl text-gray-600 mx-auto text-center">
                         Discover amazing events happening near you. Use filters
                         to find exactly what you're looking for.
                     </p>
@@ -168,8 +134,6 @@ function Hero() {
                         </div>
                     </form>
                 </div>
-
-
             </Container>
         </div>
     );

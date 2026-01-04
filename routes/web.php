@@ -7,16 +7,28 @@ use App\Http\Controllers\EventRegistrationController;
 use App\Http\Controllers\EventOwnerController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [EventsController::class, 'index'])->name('home');
+use App\Http\Controllers\OnboardingController; // Import
+
+Route::middleware('interent')->get('/', [EventsController::class, 'index'])->name('home');
 
 // Public event routes (no authentication required)
-Route::prefix('events')->name('public.events.')->group(function () {
+Route::middleware('interent')->prefix('events')->name('public.events.')->group(function () {
     Route::get('/', [PublicEventsController::class, 'index'])->name('index');
     Route::get('/search', [PublicEventsController::class, 'search'])->name('search');
+    Route::get('/featured', [PublicEventsController::class, 'featured'])->name('featured');
+    Route::get('/popular', [PublicEventsController::class, 'popular'])->name('popular');
     Route::get('/{event}', [PublicEventsController::class, 'show'])->name('show');
 });
 
-Route::middleware(['auth', 'verified'])->group(function () {
+// Onboarding routes
+Route::prefix('onboarding')->group(function(){
+    Route::get('/', [OnboardingController::class, 'index'])->name('onboarding');
+    Route::post('/', [OnboardingController::class, 'store'])->name('onboarding.store');
+});
+
+Route::middleware(['auth', 'verified', 'interent'])->group(function () {
+    
+
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Event management routes (for event owners)

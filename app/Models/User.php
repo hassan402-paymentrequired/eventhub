@@ -31,13 +31,19 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'google_id',
+        'avatar',
+        'phone',
+        'phone_verified_at',
+        'preferred_location',
+        'event_preference',
+        'is_organizer',
+        'onboarding_completed',
     ];
 
 
     protected $hidden = [
         'password',
-        'two_factor_secret',
-        'two_factor_recovery_codes',
         'remember_token',
     ];
 
@@ -46,9 +52,16 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'phone_verified_at' => 'datetime',
             'password' => 'hashed',
-            'two_factor_confirmed_at' => 'datetime',
+            'is_organizer' => 'boolean',
+            'onboarding_completed' => 'boolean',
         ];
+    }
+
+    public function interests(): BelongsToMany
+    {
+        return $this->belongsToMany(EventCategory::class, 'user_interests', 'user_id', 'event_category_id');
     }
 
     // Event relationships

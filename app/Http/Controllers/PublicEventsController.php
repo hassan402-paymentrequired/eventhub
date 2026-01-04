@@ -151,4 +151,60 @@ class PublicEventsController extends Controller
             'events' => $events
         ]);
     }
+    public function featured()
+    {
+        $events = Event::query()
+            ->published()
+            ->upcoming()
+            ->where('is_feature', true)
+            ->with(['category', 'user', 'images'])
+            ->take(6)
+            ->get()
+            ->transform(function ($event) {
+                $event->registration_count = $event->getRegistrationCount();
+                $event->available_spots = $event->availableSpots();
+                $event->is_full = $event->isFull();
+                return $event;
+            });
+
+        return response()->json($events);
+    }
+
+    public function popular()
+    {
+        $query = Event::query()
+            ->published()
+            ->upcoming()
+            ->with(['category', 'user', 'images'])
+            ->withCount('registrations');
+
+        if (Auth::check()) {
+            $user = Auth::user();
+
+            // Filter by interests if available
+            if ($user->interests()->exists()) {
+                $query->whereIn('event_category_id', $user->interests->pluck('id'));
+            }
+
+            // Filter by location if available
+            if ($user->preferred_location) {
+                $query->where(function ($q) use ($user) {
+                    $q->where('city', 'like', "%{$user->preferred_location}%")
+                        ->orWhere('state', 'like', "%{$user->preferred_location}%");
+                });
+            }
+        }
+
+        $events = $query->orderBy('registrations_count', 'desc')
+            ->take(8)
+            ->get()
+            ->transform(function ($event) {
+                $event->registration_count = $event->registrations_count;
+                $event->available_spots = $event->availableSpots();
+                $event->is_full = $event->isFull();
+                return $event;
+            });
+
+        return response()->json($events);
+    }
 }

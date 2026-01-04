@@ -1,9 +1,7 @@
-import { Calendar, MapPin, Users, Clock } from "lucide-react";
+import { Calendar, MapPin, Search, Heart, Star, Ticket } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "@/components/link";
 import { Event } from "../types";
-
-
 
 interface EventCardProps {
   event: Event;
@@ -12,79 +10,78 @@ interface EventCardProps {
 
 const EventCard = ({ event, variant = "default" }: EventCardProps) => {
   const isFeatured = variant === "featured";
+  
+  // Parse date for display
+  const eventDate = new Date(event.date);
+  const month = eventDate.toLocaleString('default', { month: 'short' }).toUpperCase();
+  const day = eventDate.getDate();
 
   return (
-    <Link href={`/events/${event.id}`}>
-      <article
-        className={`group relative overflow-hidden rounded-xl bg-card border border-border shadow-card hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1 ${
-          isFeatured ? "md:flex" : ""
-        }`}
-      >
-        {/* Image */}
-        <div
-          className={`relative overflow-hidden ${
-            isFeatured ? "md:w-2/5 h-48 md:h-auto" : "h-48"
-          }`}
-        >
+    <Link href={`/events/${event.id}`} className="block h-full">
+      <div className="group h-full flex flex-col rounded-2xl bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md border border-gray-100 overflow-hidden">
+        {/* Image Container */}
+        <div className="relative aspect-[16/10] w-full overflow-hidden">
           <img
             src={event.image}
             alt={event.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-foreground/40 to-transparent" />
           
-          {/* Category Badge */}
-          <Badge className="absolute top-3 left-3 bg-accent text-accent-foreground border-0 shadow-md">
-            {event.category}
-          </Badge>
-
-          {/* Price Badge */}
-          <Badge
-            className={`absolute top-3 right-3 border-0 shadow-md ${
-              event.price === "Free"
-                ? "bg-teal-light text-teal-dark"
-                : "bg-primary text-primary-foreground"
-            }`}
+          {/* Favorite Button */}
+          <button 
+            className="absolute top-3 right-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 shadow-sm transition-colors hover:bg-white hover:text-red-500"
+            onClick={(e) => {
+              e.preventDefault();
+              // Add favorite logic here
+            }}
           >
-            {event.price === "Free" ? "Free" : `$${event.price}`}
-          </Badge>
+            <Heart className="h-4 w-4" />
+          </button>
+
+          {/* Category Badge - Bottom Left */}
+          <span className="absolute bottom-3 left-3 rounded bg-[#FFD000] px-3 py-1 text-xs font-bold text-black shadow-sm">
+            {event.category}
+          </span>
         </div>
 
         {/* Content */}
-        <div className={`p-5 ${isFeatured ? "md:w-3/5 md:p-6" : ""}`}>
-          <h3 className={`font-bold text-foreground group-hover:text-accent transition-colors line-clamp-2 ${
-            isFeatured ? "text-xl md:text-2xl" : "text-lg"
-          }`}>
-            {event.title}
-          </h3>
-          
-          <p className={`text-muted-foreground mt-2 line-clamp-2 ${
-            isFeatured ? "text-base" : "text-sm"
-          }`}>
-            {event.description}
-          </p>
+        <div className="flex flex-1 p-4">
+            {/* Date Block */}
+            <div className="flex flex-col items-center pr-4 pt-1">
+                <span className="text-xs font-bold uppercase text-purple-600">{month}</span>
+                <span className="text-xl font-bold text-gray-900">{day}</span>
+            </div>
 
-          <div className="mt-4 space-y-2">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Calendar className="h-4 w-4 text-accent" />
-              <span>{event.date}</span>
-              <Clock className="h-4 w-4 text-accent ml-2" />
-              <span>{event.time}</span>
+            {/* Details */}
+            <div className="flex flex-1 flex-col border-l border-gray-100 pl-4">
+                <h3 className="mb-1 line-clamp-2 text-base font-bold leading-tight text-gray-900 group-hover:text-purple-600">
+                    {event.title}
+                </h3>
+                
+                {/* Organize subtitle/location name if available, or just location */}
+                 <div className="mb-3 text-xs text-gray-500">
+                    {event.location}
+                 </div>
+
+                 {/* Time */}
+                 <div className="mb-4 flex items-center text-xs text-gray-500">
+                    <span>{event.time}</span>
+                 </div>
+
+                 {/* Footer: Price & Interest */}
+                 <div className="mt-auto flex items-center justify-between border-t border-dashed border-gray-200 pt-3 text-xs">
+                    <div className="flex items-center gap-1.5 font-semibold text-gray-900">
+                        <Ticket className="h-3.5 w-3.5 text-gray-400" />
+                        {event.price === "Free" || event.price === "0" ? "Free" : `$${event.price}`}
+                    </div>
+                    <div className="flex items-center gap-1 text-gray-500">
+                        <Star className="h-3.5 w-3.5 fill-purple-100 text-purple-500" />
+                        <span>{event.attendees || 0} interested</span>
+                    </div>
+                 </div>
             </div>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <MapPin className="h-4 w-4 text-accent" />
-              <span className="truncate">{event.location}</span>
-            </div>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Users className="h-4 w-4 text-accent" />
-              <span>{event.attendees} attending</span>
-            </div>
-          </div>
         </div>
-
-        {/* Hover Effect Overlay */}
-        <div className="absolute inset-0 border-2 border-accent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-      </article>
+      </div>
     </Link>
   );
 };

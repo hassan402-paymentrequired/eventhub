@@ -1,161 +1,96 @@
-import { Button } from '@/components/button';
+import { useEffect, useState } from 'react';
+import { Link } from '@inertiajs/react';
+import axios from 'axios';
 import { Container } from '@/components/container';
-import { Link } from '@/components/link';
-import { ArrowRight } from 'lucide-react';
-import EventCard from './event/components/event-card';
-import { Event } from './event/types';
+import { Button } from '@/components/button';
+import EventCard from './event/components/event-card'; 
+import { Skeleton } from '@/components/ui/skeleton';
 
-interface DatabaseEvent {
+interface Event {
     id: string;
-    name: string;
+    title: string;
     description: string;
-    start_time: string;
-    end_time: string;
-    venue_name: string;
-    city: string;
-    state: string;
-    is_online: boolean;
-    is_free: boolean;
-    capacity: number;
-    registration_count: number;
-    available_spots: number;
-    is_full: boolean;
-    category: {
-        id: string;
-        name: string;
-    };
-    user: {
-        id: string;
-        name: string;
-    };
-    images: Array<{
-        id: string;
-        url: string;
-    }>;
+    date: string;
+    time: string;
+    location: string;
+    category: string;
+    image: string;
+    price: string;
+    organizer: string;
+    attendees: number;
 }
 
-interface FeaturedEventsProps {
-    events: DatabaseEvent[];
-}
+export default function FeaturedEvents() {
+    const [events, setEvents] = useState<Event[]>([]);
+    const [loading, setLoading] = useState(true);
 
-// Transform database event to EventCard format
-const transformEvent = (dbEvent: DatabaseEvent): Event => {
-    const startDate = new Date(dbEvent.start_time);
+    useEffect(() => {
+        const fetchEvents = async () => {
+            try {
+                // Fetch from the route we created: /events/featured
+                const response = await axios.get('/events/featured');
+                
+                const formattedEvents = response.data.map((event: any) => ({
+                    id: event.id,
+                    title: event.name,
+                    description: event.description,
+                    date: event.start_time,
+                    time: new Date(event.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    location: event.venue_name || event.city,
+                    category: event.category.name,
+                    image: event.images[0]?.url ? `/storage/${event.images[0].url}` : '/images/event-placeholder.jpg',
+                    price: event.is_free ? 'Free' : 'Paid',
+                    organizer: event.user.name,
+                    attendees: event.registration_count
+                }));
+                setEvents(formattedEvents);
+            } catch (error) {
+                console.error('Failed to fetch featured events:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    return {
-        id: dbEvent.id,
-        title: dbEvent.name,
-        description: dbEvent.description,
-        date: startDate.toLocaleDateString(),
-        time: startDate.toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit',
-        }),
-        location: dbEvent.is_online
-            ? 'Online Event'
-            : `${dbEvent.venue_name || ''}, ${dbEvent.city}, ${dbEvent.state}`.trim(),
-        category: dbEvent.category?.name || 'General',
-        image: dbEvent.images?.[0]?.url
-            ? `/storage/${dbEvent.images[0].url}`
-            : '/logo.svg',
-        price: dbEvent.is_free ? 'Free' : 'Paid',
-        attendees: dbEvent.registration_count || 0,
-        featured: false,
-        speakers: [],
-        tickets: [],
-        agendas: [],
-        faqs: [],
-        images: dbEvent.images || [],
-    };
-};
+        fetchEvents();
+    }, []);
 
-const FeaturedEvents = ({ events }: FeaturedEventsProps) => {
-    // Transform database events to EventCard format
-    const transformedEvents = events.map(transformEvent);
-    const featuredEvents = transformedEvents.slice(0, 2);
-    const regularEvents = transformedEvents.slice(2, 6);
-
-    if (events.length === 0) {
-        return (
-            <section className="bg-background py-16">
-                <Container>
-                    <div className="text-center">
-                        <h2 className="mb-3 text-3xl font-bold text-foreground md:text-4xl">
-                            Featured <span className="text-accent">Events</span>
-                        </h2>
-                        <p className="mx-auto mb-8 max-w-xl text-muted-foreground">
-                            No events available at the moment. Check back soon
-                            for exciting events!
-                        </p>
-                        <Link href="/events">
-                            <Button variant="outline" className="group">
-                                Browse All Events
-                                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                            </Button>
-                        </Link>
-                    </div>
-                </Container>
-            </section>
-        );
-    }
+    // If fully loaded and no events, don't show the section
+    if (!loading && events.length === 0) return null;
 
     return (
-        <section className="bg-background py-16">
+        <div className="py-20">
             <Container>
-                {/* Section Header */}
-                <div className="mb-12 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+                <div className="mb-12 flex flex-col items-center justify-between gap-4 sm:flex-row">
                     <div>
-                        <h2 className="mb-3 text-3xl font-bold text-foreground md:text-4xl">
-                            Featured <span className="text-accent">Events</span>
+                        <h2 className="text-3xl font-bold text-gray-900">
+                            Featured Events
                         </h2>
-                        <p className="max-w-xl text-muted-foreground">
-                            Hand-picked events that you don't want to miss. From
-                            conferences to concerts, discover experiences that
-                            inspire.
+                        <p className="mt-2 text-gray-600">
+                            Don't miss out on these premium experiences.
                         </p>
                     </div>
-                    <Link href="/events">
-                        <Button variant="outline" className="group">
-                            View All Events
-                            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                        </Button>
-                    </Link>
                 </div>
 
-                {/* Featured Events Grid */}
-                {featuredEvents.length > 0 && (
-                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                        {featuredEvents.map((event, index) => (
-                            <div
-                                key={event.id}
-                                className="animate-fade-up"
-                                style={{ animationDelay: `${index * 0.1}s` }}
-                            >
-                                <EventCard event={event} variant="featured" />
-                            </div>
-                        ))}
-                    </div>
-                )}
-
-                {/* Regular Events Grid */}
-                {regularEvents.length > 0 && (
-                    <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                        {regularEvents.map((event, index) => (
-                            <div
-                                key={event.id}
-                                className="animate-fade-up"
-                                style={{
-                                    animationDelay: `${(index + 2) * 0.1}s`,
-                                }}
-                            >
-                                <EventCard event={event} />
-                            </div>
-                        ))}
-                    </div>
-                )}
+                <div className="grid gap-8 lg:grid-cols-2">
+                    {loading
+                        ? Array.from({ length: 2 }).map((_, i) => (
+                              <div key={i} className="flex flex-col space-y-3">
+                                  <Skeleton className="h-[300px] w-full rounded-2xl" />
+                                  <div className="space-y-2">
+                                      <Skeleton className="h-4 w-[80%]" />
+                                      <Skeleton className="h-4 w-[60%]" />
+                                  </div>
+                              </div>
+                          ))
+                        : events.map((event) => (
+                              <EventCard
+                                  key={event.id}
+                                  event={event}
+                                  variant="featured"
+                              />
+                          ))}
+                </div>
             </Container>
-        </section>
+        </div>
     );
-};
-
-export default FeaturedEvents;
+}
