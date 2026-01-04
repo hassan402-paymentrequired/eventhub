@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\EventResource;
 use App\Models\Event;
 use App\Models\EventCategory;
 use Illuminate\Http\Request;
@@ -157,17 +158,12 @@ class PublicEventsController extends Controller
             ->published()
             ->upcoming()
             ->where('is_feature', true)
-            ->with(['category', 'user', 'images'])
+            ->with(['category', 'user', 'images', 'tickets'])
+            ->withCount('registrations')
             ->take(6)
-            ->get()
-            ->transform(function ($event) {
-                $event->registration_count = $event->getRegistrationCount();
-                $event->available_spots = $event->availableSpots();
-                $event->is_full = $event->isFull();
-                return $event;
-            });
+            ->get();
 
-        return response()->json($events);
+        return EventResource::collection($events);
     }
 
     public function popular()
@@ -175,11 +171,13 @@ class PublicEventsController extends Controller
         $query = Event::query()
             ->published()
             ->upcoming()
-            ->with(['category', 'user', 'images'])
+            ->with(['category', 'user', 'images', 'tickets'])
             ->withCount('registrations');
 
         if (Auth::check()) {
             $user = Auth::user();
+
+            // Log::info($user->interests->pluck('id'));
 
             // Filter by interests if available
             if ($user->interests()->exists()) {
@@ -197,14 +195,8 @@ class PublicEventsController extends Controller
 
         $events = $query->orderBy('registrations_count', 'desc')
             ->take(8)
-            ->get()
-            ->transform(function ($event) {
-                $event->registration_count = $event->registrations_count;
-                $event->available_spots = $event->availableSpots();
-                $event->is_full = $event->isFull();
-                return $event;
-            });
+            ->get();
 
-        return response()->json($events);
+        return EventResource::collection($events);
     }
 }

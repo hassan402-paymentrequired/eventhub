@@ -29,21 +29,7 @@ export default function FeaturedEvents() {
             try {
                 // Fetch from the route we created: /events/featured
                 const response = await axios.get('/events/featured');
-                
-                const formattedEvents = response.data.map((event: any) => ({
-                    id: event.id,
-                    title: event.name,
-                    description: event.description,
-                    date: event.start_time,
-                    time: new Date(event.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                    location: event.venue_name || event.city,
-                    category: event.category.name,
-                    image: event.images[0]?.url ? `/storage/${event.images[0].url}` : '/images/event-placeholder.jpg',
-                    price: event.is_free ? 'Free' : 'Paid',
-                    organizer: event.user.name,
-                    attendees: event.registration_count
-                }));
-                setEvents(formattedEvents);
+                setEvents(response.data.data);
             } catch (error) {
                 console.error('Failed to fetch featured events:', error);
             } finally {

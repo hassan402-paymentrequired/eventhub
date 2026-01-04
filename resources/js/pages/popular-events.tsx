@@ -29,19 +29,7 @@ export default function PopularEvents() {
         const fetchEvents = async () => {
             try {
                 const response = await axios.get('/events/popular');
-                const formattedEvents = response.data.map((event: any) => ({
-                    id: event.id,
-                    title: event.name,
-                    description: event.description,
-                    date: event.start_time,
-                    time: new Date(event.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                    location: event.venue_name || event.city,
-                    category: event.category.name,
-                    image: event.images[0]?.url ? `/storage/${event.images[0].url}` : '/images/event-placeholder.jpg',
-                    price: event.is_free ? 'Free' : 'Paid',
-                    organizer: event.user.name,
-                    attendees: event.registration_count
-                }));
+                const formattedEvents = response.data.data;
                 setEvents(formattedEvents);
             } catch (error) {
                 console.error('Failed to fetch popular events:', error);

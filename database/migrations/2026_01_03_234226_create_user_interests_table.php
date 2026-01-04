@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         if (!Schema::hasTable('user_interests')) {
             Schema::create('user_interests', function (Blueprint $table) {
-                $table->ulid('id')->primary();
+                // $table->ulid('id')->primary();
                 $table->foreignUlid('user_id')->constrained('users')->cascadeOnDelete();
                 $table->foreignUlid('event_category_id')->constrained('event_categories')->cascadeOnDelete();
                 $table->timestamps();
