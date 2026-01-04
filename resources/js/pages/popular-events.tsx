@@ -67,7 +67,7 @@ export default function PopularEvents() {
                     </div>
                 </div>
 
-                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {loading
                         ? Array.from({ length: 4 }).map((_, i) => (
                               <div key={i} className="flex flex-col space-y-3">

@@ -57,7 +57,7 @@ export default function FeaturedEvents() {
                     </div>
                 </div>
 
-                <div className="grid gap-8 lg:grid-cols-2">
+                <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
                     {loading
                         ? Array.from({ length: 2 }).map((_, i) => (
                               <div key={i} className="flex flex-col space-y-3">
