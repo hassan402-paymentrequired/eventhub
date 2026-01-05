@@ -16,7 +16,17 @@ export interface Event {
   agendas: Agenda[],
   faqs: Faq[],
   images: Array<{ url: string, id: string }>,
-  category: Category[]
+  category: Category[] | Category,
+  state: string,
+  city: string
+  is_free?: boolean
+  is_online?: boolean
+  online_url?: string
+  venue_name?: string
+  name?: string
+  user?: {
+    name: string
+  }
 }
 
 export interface Category {

@@ -16,7 +16,7 @@ class PublicEventsController extends Controller
         $query = Event::query()
             ->published()
             ->upcoming()
-            ->with(['category', 'user', 'images']);
+            ->with(['category', 'user', 'images', 'tickets']);
 
         // Search functionality
         if ($request->filled('search')) {
@@ -70,14 +70,6 @@ class PublicEventsController extends Controller
             ->orderBy('is_feature')
             ->paginate(12)
             ->withQueryString();
-
-        // Add registration count and available spots to each event
-        $events->getCollection()->transform(function ($event) {
-            $event->registration_count = $event->getRegistrationCount();
-            $event->available_spots = $event->availableSpots();
-            $event->is_full = $event->isFull();
-            return $event;
-        });
 
         $categories = EventCategory::all();
 

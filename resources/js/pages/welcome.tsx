@@ -55,22 +55,12 @@ function Hero() {
     };
     return (
         <div className="relative">
-            <Gradient className="absolute inset-2 bottom-0 rounded-4xl ring-1 ring-black/5 ring-inset" />
+            {/* <Gradient className="absolute inset-2 bottom-0 rounded-4xl ring-1 ring-black/5 ring-inset" /> */}
             <Container className="relative">
-                <Navbar
-                    banner={
-                        <Link
-                            href="/blog/radiant-raises-100m-series-a-from-tailwind-ventures"
-                            className="flex items-center gap-1 rounded-full bg-fuchsia-950/35 px-3 py-0.5 text-sm/6 font-medium text-white data-hover:bg-fuchsia-950/30"
-                        >
-                            Browse your favorite events and conferences
-                            <ChevronRightIcon className="size-4" />
-                        </Link>
-                    }
-                />
+                <Navbar />
 
 
-                <div className="pt-16 pb-24 sm:pt-24 md:pt-32">
+                <div className="pt-16 pb-24 sm:pt-24 md:pt-16">
                     <h1 className="mb-4 text-3xl font-bold text-gray-900 md:text-4xl text-center">
                         Browse <span className="text-purple-600">Events</span>
                     </h1>

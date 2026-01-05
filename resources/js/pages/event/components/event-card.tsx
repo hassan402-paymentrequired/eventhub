@@ -1,89 +1,96 @@
-import { Calendar, MapPin, Search, Heart, Star, Ticket } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Link } from "@/components/link";
-import { Event } from "../types";
+import { Button } from '@/components/ui/button';
+import { format } from 'date-fns';
+import { Calendar, MapPin, Share2 } from 'lucide-react';
+import { Event } from '../types';
 
-interface EventCardProps {
-  event: Event;
-  variant?: "default" | "featured";
+interface Props {
+    event: Event;
+    onShare: () => void;
 }
 
-const EventCard = ({ event, variant = "default" }: EventCardProps) => {
-  const isFeatured = variant === "featured";
-  
-  // Parse date for display
-  const eventDate = new Date(event.date);
-  const month = eventDate.toLocaleString('default', { month: 'short' }).toUpperCase();
-  const day = eventDate.getDate();
+const EventCard = ({ event, onShare }: Props) => {
+    return (
+        <div className="brutalist-shadow hover:shadow-brutalist-lg group overflow-hidden border-4 border-primary bg-card transition-all duration-300">
+            {/* Event Image */}
+            <div className="bg-concrete relative h-48 overflow-hidden">
+                <img
+                    src={`/storage/${event.images[0].url}`}
+                    alt={`${event?.name} event banner`}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
 
-  return (
-    <Link href={`/events/${event.id}`} className="block h-full">
-      <div className="group h-full flex flex-col rounded-2xl bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md border border-gray-100 overflow-hidden">
-        {/* Image Container */}
-        <div className="relative aspect-[16/10] w-full overflow-hidden">
-          <img
-            src={event.image}
-            alt={event.title}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-          
-          {/* Favorite Button */}
-          <button 
-            className="absolute top-3 right-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 shadow-sm transition-colors hover:bg-white hover:text-red-500"
-            onClick={(e) => {
-              e.preventDefault();
-              // Add favorite logic here
-            }}
-          >
-            <Heart className="h-4 w-4" />
-          </button>
+                {/* Category Badge */}
+                <div className="absolute top-3 left-3 border-2 border-primary bg-accent px-3 py-1 text-xs font-bold text-accent-foreground">
+                    {event?.category.name}
+                </div>
 
-          {/* Category Badge - Bottom Left */}
-          <span className="absolute bottom-3 left-3 rounded bg-[#FFD000] px-3 py-1 text-xs font-bold text-black shadow-sm">
-            {event.category}
-          </span>
-        </div>
-
-        {/* Content */}
-        <div className="flex flex-1 p-4">
-            {/* Date Block */}
-            <div className="flex flex-col items-center pr-4 pt-1">
-                <span className="text-xs font-bold uppercase text-purple-600">{month}</span>
-                <span className="text-xl font-bold text-gray-900">{day}</span>
+                {/* Action Buttons */}
+                <div className="absolute top-3 right-3 flex gap-2">
+                    <button
+                        onClick={onShare}
+                        className="border-2 border-primary bg-card p-2 transition-colors hover:bg-accent"
+                        aria-label="Share event"
+                    >
+                        <Share2 size={18} className="text-primary" />
+                    </button>
+                </div>
             </div>
 
-            {/* Details */}
-            <div className="flex flex-1 flex-col border-l border-gray-100 pl-4">
-                <h3 className="mb-1 line-clamp-2 text-base font-bold leading-tight text-gray-900 group-hover:text-purple-600">
-                    {event.title}
+            {/* Event Details */}
+            <div className="p-5">
+                <h3 className="mb-3 line-clamp-2 text-xl font-black text-primary">
+                    {event?.title}
                 </h3>
-                
-                {/* Organize subtitle/location name if available, or just location */}
-                 <div className="mb-3 text-xs text-gray-500">
-                    {event.location}
-                 </div>
 
-                 {/* Time */}
-                 <div className="mb-4 flex items-center text-xs text-gray-500">
-                    <span>{event.time}</span>
-                 </div>
+                <div className="mb-4 space-y-2">
+                    <div className="flex items-start gap-2 text-sm">
+                        <Calendar
+                            size={16}
+                            className="mt-0.5 flex-shrink-0 text-primary"
+                        />
+                        <span className="font-medium text-muted-foreground">
+                            {format(
+                                new Date(event?.date),
+                                'MMM dd, yyyy • h:mm a',
+                            )}
+                        </span>
+                    </div>
 
-                 {/* Footer: Price & Interest */}
-                 <div className="mt-auto flex items-center justify-between border-t border-dashed border-gray-200 pt-3 text-xs">
-                    <div className="flex items-center gap-1.5 font-semibold text-gray-900">
-                        <Ticket className="h-3.5 w-3.5 text-gray-400" />
-                        {event.price === "Free" || event.price === "0" ? "Free" : `$${event.price}`}
+                    <div className="flex items-start gap-2 text-sm">
+                        <MapPin
+                            size={16}
+                            className="mt-0.5 flex-shrink-0 text-primary"
+                        />
+                        <span className="line-clamp-1 font-medium text-muted-foreground">
+                            {event?.venue_name}
+                        </span>
                     </div>
-                    <div className="flex items-center gap-1 text-gray-500">
-                        <Star className="h-3.5 w-3.5 fill-purple-100 text-purple-500" />
-                        <span>{event.attendees || 0} interested</span>
+
+                    {event?.user && (
+                        <div className="text-sm">
+                            <span className="font-bold text-primary">
+                                Organizer:{' '}
+                            </span>
+                            <span className="font-medium text-muted-foreground">
+                                {event?.user?.name}
+                            </span>
+                        </div>
+                    )}
+                </div>
+
+                {/* Price and CTA */}
+                <div className="border-concrete flex items-center justify-between border-t-2 pt-4">
+                    <div className="flex items-center gap-1">
+                        <span className="text-base font-black text-primary">
+                            {event?.is_free ? 'FREE' : 'paid'}
+                        </span>
                     </div>
-                 </div>
+
+                    <Button>View Details</Button>
+                </div>
             </div>
         </div>
-      </div>
-    </Link>
-  );
+    );
 };
 
 export default EventCard;
