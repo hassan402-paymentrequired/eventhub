@@ -21,13 +21,13 @@ Route::middleware('interent')->prefix('events')->name('public.events.')->group(f
 });
 
 // Onboarding routes
-Route::prefix('onboarding')->group(function(){
+Route::prefix('onboarding')->group(function () {
     Route::get('/', [OnboardingController::class, 'index'])->name('onboarding');
     Route::post('/', [OnboardingController::class, 'store'])->name('onboarding.store');
 });
 
 Route::middleware(['auth', 'verified', 'interent'])->group(function () {
-    
+
 
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -40,6 +40,7 @@ Route::middleware(['auth', 'verified', 'interent'])->group(function () {
 
     // Event registration routes
     Route::prefix('events')->group(function () {
+        Route::get('/payment/callback', [EventRegistrationController::class, 'handlePaymentCallback'])->name('events.payment.callback');
         Route::post('/{event}/register', [EventRegistrationController::class, 'store'])->name('events.register');
     });
 

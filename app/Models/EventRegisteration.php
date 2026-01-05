@@ -13,12 +13,18 @@ class EventRegisteration extends Model
     protected $fillable = [
         'event_id',
         'user_id',
+        'ticket_id',
+        'quantity',
+        'total_price',
+        'attendee_details',
         'status',
         'registration_date'
     ];
 
     protected $casts = [
         'registration_date' => 'datetime',
+        'attendee_details' => 'array',
+        'total_price' => 'decimal:2',
     ];
 
     protected static function boot()
@@ -43,6 +49,11 @@ class EventRegisteration extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function ticket(): BelongsTo
+    {
+        return $this->belongsTo(EventTicket::class, 'ticket_id');
     }
 
     // Scopes

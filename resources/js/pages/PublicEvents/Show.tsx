@@ -1,8 +1,8 @@
-import { Container } from '@/components/container';
+
 import { Gradient } from '@/components/gradient';
 import { Navbar } from '@/components/navbar';
 import { Button } from '@/components/ui/button';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import {
     Calendar,
     ChevronRightIcon,
@@ -13,8 +13,10 @@ import {
     MapPin,
     MessageCircle,
     User,
-    Users,
 } from 'lucide-react';
+import { useState } from 'react';
+import RegistrationModal from './components/registration-modal';
+import { Container } from '@/components/container';
 
 interface Event {
     id: string;
@@ -80,19 +82,10 @@ interface Props {
 }
 
 const PublicEventShow = ({ event }: Props) => {
+    const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
+
     const handleRegister = () => {
-        router.post(
-            `/events/${event.id}/register`,
-            {},
-            {
-                onSuccess: () => {
-                    // Handle success in the controller redirect
-                },
-                onError: (errors) => {
-                    console.error('Registration failed:', errors);
-                },
-            },
-        );
+        setIsRegistrationOpen(true);
     };
 
     const formatDate = (dateString: string) => {
@@ -123,6 +116,11 @@ const PublicEventShow = ({ event }: Props) => {
     return (
         <>
             <Head title={event.name} />
+            <RegistrationModal
+                isOpen={isRegistrationOpen}
+                onClose={() => setIsRegistrationOpen(false)}
+                event={event}
+            />
 
             <div className="relative">
                 {event.images && event.images.length > 0 ? (
@@ -256,7 +254,7 @@ const PublicEventShow = ({ event }: Props) => {
                                     <h2 className="mb-6 text-2xl font-bold text-gray-900">
                                         Featured Speakers
                                     </h2>
-                                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
                                         {event.speakers.map((speaker) => (
                                             <div
                                                 key={speaker.id}
